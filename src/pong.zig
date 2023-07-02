@@ -148,8 +148,6 @@ fn generate_output(game: *Game) void {
     game.renderer.present();
 }
 
-var ii: usize = 0;
-
 fn update_game(game: *Game) void {
     defer game.ticks_count = sdl.getTicks();
 
