@@ -5,11 +5,13 @@ const Game = struct {
     is_running: bool,
     window: *sdl.Window,
     renderer: *sdl.Renderer,
-    paddle_pos: Vec2,
     ball_pos: Vec2,
     ball_vel: Vec2,
     ticks_count: u32,
-    paddle_dir: f32,
+    left_paddle_pos: Vec2,
+    left_paddle_dir: f32,
+    right_paddle_pos: Vec2,
+    right_paddle_dir: f32,
 };
 
 const Vec2 = struct {
@@ -48,7 +50,7 @@ fn initialize_game() !Game {
     };
     errdefer window.destroy();
 
-    const renderer = sdl.Renderer.create(window, null, .{ .accelerated = true, .present_vsync = false }) catch {
+    const renderer = sdl.Renderer.create(window, null, .{ .accelerated = true, .present_vsync = true }) catch {
         std.log.err("Failed to create renderer: {s}", .{sdl.getError().?});
         return error.InitError;
     };
@@ -58,8 +60,13 @@ fn initialize_game() !Game {
         .y = 384,
     };
 
-    const paddle_pos = .{
+    const left_paddle_pos = .{
         .x = THICKNESS,
+        .y = 384,
+    };
+
+    const right_paddle_pos = .{
+        .x = 1366 - THICKNESS,
         .y = 384,
     };
 
@@ -74,9 +81,11 @@ fn initialize_game() !Game {
         .renderer = renderer,
         .ball_pos = ball_pos,
         .ball_vel = ball_vel,
-        .paddle_pos = paddle_pos,
+        .left_paddle_pos = left_paddle_pos,
+        .right_paddle_pos = right_paddle_pos,
         .ticks_count = sdl.getTicks(),
-        .paddle_dir = 0.0,
+        .left_paddle_dir = 0.0,
+        .right_paddle_dir = 0.0,
     };
 }
 
@@ -113,12 +122,20 @@ fn process_input(game: *Game) void {
         game.is_running = false;
     }
 
-    game.paddle_dir = 0.0;
+    game.left_paddle_dir = 0.0;
     if (key_state[@intFromEnum(sdl.Scancode.w)] != 0) {
-        game.paddle_dir = -1.0;
+        game.left_paddle_dir = -1.0;
     }
     if (key_state[@intFromEnum(sdl.Scancode.s)] != 0) {
-        game.paddle_dir += 1.0;
+        game.left_paddle_dir += 1.0;
+    }
+
+    game.right_paddle_dir = 0.0;
+    if (key_state[@intFromEnum(sdl.Scancode.i)] != 0) {
+        game.right_paddle_dir = -1.0;
+    }
+    if (key_state[@intFromEnum(sdl.Scancode.k)] != 0) {
+        game.right_paddle_dir += 1.0;
     }
 }
 
@@ -135,15 +152,23 @@ fn generate_output(game: *Game) void {
         .h = THICKNESS,
     };
 
-    const paddle = sdl.RectF{
-        .x = game.paddle_pos.x - THICKNESS / 2.0,
-        .y = game.paddle_pos.y - PADDLE_HEIGHT / 2.0,
+    const left_paddle = sdl.RectF{
+        .x = game.left_paddle_pos.x - THICKNESS / 2.0,
+        .y = game.left_paddle_pos.y - PADDLE_HEIGHT / 2.0,
+        .w = THICKNESS,
+        .h = PADDLE_HEIGHT,
+    };
+
+    const right_paddle = sdl.RectF{
+        .x = game.right_paddle_pos.x - THICKNESS / 2.0,
+        .y = game.right_paddle_pos.y - PADDLE_HEIGHT / 2.0,
         .w = THICKNESS,
         .h = PADDLE_HEIGHT,
     };
 
     game.renderer.fillRectF(ball) catch unreachable;
-    game.renderer.fillRectF(paddle) catch unreachable;
+    game.renderer.fillRectF(left_paddle) catch unreachable;
+    game.renderer.fillRectF(right_paddle) catch unreachable;
 
     game.renderer.present();
 }
@@ -155,14 +180,8 @@ fn update_game(game: *Game) void {
 
     if (0.05 < delta_time) delta_time = 0.05;
 
-    if (game.paddle_dir != 0.0) {
-        game.paddle_pos.y += game.paddle_dir * 400.0 * delta_time;
-        if (game.paddle_pos.y < (PADDLE_HEIGHT / 2.0 + THICKNESS)) {
-            game.paddle_pos.y = PADDLE_HEIGHT / 2.0 + THICKNESS;
-        } else if ((768.0 - PADDLE_HEIGHT / 2.0 - THICKNESS) < game.paddle_pos.y) {
-            game.paddle_pos.y = 768.0 - PADDLE_HEIGHT / 2.0 - THICKNESS;
-        }
-    }
+    clap_paddle_position(&game.left_paddle_pos, game.left_paddle_dir, delta_time);
+    clap_paddle_position(&game.right_paddle_pos, game.right_paddle_dir, delta_time);
 
     game.ball_pos.x += game.ball_vel.x * delta_time;
     game.ball_pos.y += game.ball_vel.y * delta_time;
@@ -181,12 +200,28 @@ fn update_game(game: *Game) void {
         game.ball_vel.x *= -1.0;
     }
 
-    const diff = @fabs(game.ball_pos.y - game.paddle_pos.y);
-
-    if (diff <= PADDLE_HEIGHT / 2.0 and
-        20.0 <= game.ball_pos.x and game.ball_pos.x <= 25.0 and
-        game.ball_vel.x < 0.0)
-    {
+    if (is_ball_collide_with_paddle(game, game.left_paddle_pos.y, 20.0, 25.0, false))
         game.ball_vel.x *= -1.0;
+
+    if (is_ball_collide_with_paddle(game, game.right_paddle_pos.y, 1366.0 - 25.0, 1366.0 - 20.0, true))
+        game.ball_vel.x *= -1.0;
+}
+
+fn clap_paddle_position(paddle_pos: *Vec2, paddle_dir: f32, delta: f32) void {
+    if (paddle_dir != 0.0) {
+        paddle_pos.y += paddle_dir * 400.0 * delta;
+        if (paddle_pos.y < (PADDLE_HEIGHT / 2.0 + THICKNESS)) {
+            paddle_pos.y = PADDLE_HEIGHT / 2.0 + THICKNESS;
+        } else if ((768.0 - PADDLE_HEIGHT / 2.0 - THICKNESS) < paddle_pos.y) {
+            paddle_pos.y = 768.0 - PADDLE_HEIGHT / 2.0 - THICKNESS;
+        }
     }
+}
+
+fn is_ball_collide_with_paddle(game: *Game, paddle_y: f32, paddle_left_border: f32, paddle_right_border: f32, ball_moves_right: bool) bool {
+    const right_paddle_diff = @fabs(game.ball_pos.y - paddle_y);
+    return right_paddle_diff <= PADDLE_HEIGHT / 2.0 and
+        paddle_left_border <= game.ball_pos.x and game.ball_pos.x <= paddle_right_border and
+        (ball_moves_right and 0.0 < game.ball_vel.x or
+        !ball_moves_right and game.ball_vel.x < 0.0);
 }
