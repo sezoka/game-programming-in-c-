@@ -5,13 +5,17 @@ const Game = struct {
     is_running: bool,
     window: *sdl.Window,
     renderer: *sdl.Renderer,
-    ball_pos: Vec2,
-    ball_vel: Vec2,
     ticks_count: u32,
     left_paddle_pos: Vec2,
     left_paddle_dir: f32,
     right_paddle_pos: Vec2,
     right_paddle_dir: f32,
+    balls: std.ArrayList(Ball),
+};
+
+const Ball = struct {
+    vel: Vec2,
+    pos: Vec2,
 };
 
 const Vec2 = struct {
@@ -21,6 +25,9 @@ const Vec2 = struct {
 
 const THICKNESS = 15.0;
 const PADDLE_HEIGHT = THICKNESS * 6.0;
+
+var gpa = std.heap.GeneralPurposeAllocator(.{}){};
+const ally = gpa.allocator();
 
 pub fn main() !void {
     var game = initialize_game() catch return;
@@ -55,9 +62,37 @@ fn initialize_game() !Game {
         return error.InitError;
     };
 
-    const ball_pos = .{
-        .x = 512,
-        .y = 384,
+    const ball_1 = .{
+        .vel = .{
+            .x = -200.0,
+            .y = 235.0,
+        },
+        .pos = .{
+            .x = 512,
+            .y = 384,
+        },
+    };
+
+    const ball_2 = .{
+        .vel = .{
+            .x = -100.0,
+            .y = 135.0,
+        },
+        .pos = .{
+            .x = 412,
+            .y = 284,
+        },
+    };
+
+    const ball_3 = .{
+        .vel = .{
+            .x = -300.0,
+            .y = 335.0,
+        },
+        .pos = .{
+            .x = 312,
+            .y = 484,
+        },
     };
 
     const left_paddle_pos = .{
@@ -70,17 +105,16 @@ fn initialize_game() !Game {
         .y = 384,
     };
 
-    const ball_vel = .{
-        .x = -200.0,
-        .y = 235.0,
-    };
+    var balls = std.ArrayList(Ball).init(ally);
+    try balls.append(ball_1);
+    try balls.append(ball_2);
+    try balls.append(ball_3);
 
     return .{
+        .balls = balls,
         .is_running = false,
         .window = window,
         .renderer = renderer,
-        .ball_pos = ball_pos,
-        .ball_vel = ball_vel,
         .left_paddle_pos = left_paddle_pos,
         .right_paddle_pos = right_paddle_pos,
         .ticks_count = sdl.getTicks(),
@@ -93,6 +127,8 @@ fn shutdown(game: *Game) void {
     game.window.destroy();
     game.renderer.destroy();
     sdl.quit();
+    game.balls.deinit();
+    _ = gpa.deinit();
 }
 
 fn run_loop(game: *Game) void {
@@ -145,12 +181,15 @@ fn generate_output(game: *Game) void {
 
     game.renderer.setDrawColorRGBA(0, 0, 0, 255) catch unreachable;
 
-    const ball = sdl.RectF{
-        .x = game.ball_pos.x - THICKNESS / 2.0,
-        .y = game.ball_pos.y - THICKNESS / 2.0,
-        .w = THICKNESS,
-        .h = THICKNESS,
-    };
+    for (game.balls.items) |*ball| {
+        const ball_rect = sdl.RectF{
+            .x = ball.pos.x - THICKNESS / 2.0,
+            .y = ball.pos.y - THICKNESS / 2.0,
+            .w = THICKNESS,
+            .h = THICKNESS,
+        };
+        game.renderer.fillRectF(ball_rect) catch unreachable;
+    }
 
     const left_paddle = sdl.RectF{
         .x = game.left_paddle_pos.x - THICKNESS / 2.0,
@@ -166,7 +205,6 @@ fn generate_output(game: *Game) void {
         .h = PADDLE_HEIGHT,
     };
 
-    game.renderer.fillRectF(ball) catch unreachable;
     game.renderer.fillRectF(left_paddle) catch unreachable;
     game.renderer.fillRectF(right_paddle) catch unreachable;
 
@@ -183,28 +221,30 @@ fn update_game(game: *Game) void {
     clap_paddle_position(&game.left_paddle_pos, game.left_paddle_dir, delta_time);
     clap_paddle_position(&game.right_paddle_pos, game.right_paddle_dir, delta_time);
 
-    game.ball_pos.x += game.ball_vel.x * delta_time;
-    game.ball_pos.y += game.ball_vel.y * delta_time;
+    for (game.balls.items) |*ball| {
+        ball.pos.x += ball.vel.x * delta_time;
+        ball.pos.y += ball.vel.y * delta_time;
 
-    if (768.0 - THICKNESS < game.ball_pos.y) {
-        game.ball_pos.y = 768.0 - THICKNESS;
-        game.ball_vel.y *= -1.0;
-    } else if (game.ball_pos.y < THICKNESS) {
-        game.ball_pos.y = THICKNESS;
-        game.ball_vel.y *= -1.0;
-    } else if (game.ball_pos.x < THICKNESS) {
-        game.ball_pos.x = THICKNESS;
-        game.ball_vel.x *= -1.0;
-    } else if (1366.0 - THICKNESS < game.ball_pos.x) {
-        game.ball_pos.x = 1366.0 - THICKNESS;
-        game.ball_vel.x *= -1.0;
+        if (768.0 - THICKNESS < ball.pos.y) {
+            ball.pos.y = 768.0 - THICKNESS;
+            ball.vel.y *= -1.0;
+        } else if (ball.pos.y < THICKNESS) {
+            ball.pos.y = THICKNESS;
+            ball.vel.y *= -1.0;
+        } else if (ball.pos.x < THICKNESS) {
+            ball.pos.x = THICKNESS;
+            ball.vel.x *= -1.0;
+        } else if (1366.0 - THICKNESS < ball.pos.x) {
+            ball.pos.x = 1366.0 - THICKNESS;
+            ball.vel.x *= -1.0;
+        }
+
+        if (is_ball_collide_with_paddle(ball, game.left_paddle_pos.y, 20.0, 25.0, false))
+            ball.vel.x *= -1.0;
+
+        if (is_ball_collide_with_paddle(ball, game.right_paddle_pos.y, 1366.0 - 25.0, 1366.0 - 20.0, true))
+            ball.vel.x *= -1.0;
     }
-
-    if (is_ball_collide_with_paddle(game, game.left_paddle_pos.y, 20.0, 25.0, false))
-        game.ball_vel.x *= -1.0;
-
-    if (is_ball_collide_with_paddle(game, game.right_paddle_pos.y, 1366.0 - 25.0, 1366.0 - 20.0, true))
-        game.ball_vel.x *= -1.0;
 }
 
 fn clap_paddle_position(paddle_pos: *Vec2, paddle_dir: f32, delta: f32) void {
@@ -218,10 +258,10 @@ fn clap_paddle_position(paddle_pos: *Vec2, paddle_dir: f32, delta: f32) void {
     }
 }
 
-fn is_ball_collide_with_paddle(game: *Game, paddle_y: f32, paddle_left_border: f32, paddle_right_border: f32, ball_moves_right: bool) bool {
-    const right_paddle_diff = @fabs(game.ball_pos.y - paddle_y);
+fn is_ball_collide_with_paddle(ball: *Ball, paddle_y: f32, paddle_left_border: f32, paddle_right_border: f32, ball_moves_right: bool) bool {
+    const right_paddle_diff = @fabs(ball.pos.y - paddle_y);
     return right_paddle_diff <= PADDLE_HEIGHT / 2.0 and
-        paddle_left_border <= game.ball_pos.x and game.ball_pos.x <= paddle_right_border and
-        (ball_moves_right and 0.0 < game.ball_vel.x or
-        !ball_moves_right and game.ball_vel.x < 0.0);
+        paddle_left_border <= ball.pos.x and ball.pos.x <= paddle_right_border and
+        (ball_moves_right and 0.0 < ball.vel.x or
+        !ball_moves_right and ball.vel.x < 0.0);
 }
