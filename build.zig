@@ -1,5 +1,5 @@
 const std = @import("std");
-const zsdl = @import("libs/zsdl/build.zig");
+const Sdk = @import("libs/sdl/Sdk.zig");
 
 // Although this function looks imperative, note that its job is to
 // declaratively construct a build graph that will be executed by an external
@@ -24,8 +24,10 @@ pub fn build(b: *std.Build) void {
         .optimize = optimize,
     });
 
-    const zsdl_pkg = zsdl.package(b, target, optimize, .{});
-    zsdl_pkg.link(exe);
+    const sdk = Sdk.init(b, null);
+    sdk.link(exe, .static);
+
+    exe.addModule("sdl", sdk.getWrapperModule());
 
     // This declares intent for the executable to be installed into the
     // standard location when the user invokes the "install" step (the default
