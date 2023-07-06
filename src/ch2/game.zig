@@ -1,6 +1,10 @@
 const std = @import("std");
 const actor = @import("actor.zig");
 const sdl = @import("sdl");
+const component = @import("component.zig");
+const texture = @import("texture.zig");
+
+pub const Texture_Map = std.StringHashMap(sdl.Texture);
 
 pub const Game = struct {
     updating_actors: bool,
@@ -9,6 +13,7 @@ pub const Game = struct {
     ticks_count: u32,
     running: bool,
     renderer: sdl.Renderer,
+    texture_map: Texture_Map,
     ally: std.mem.Allocator,
 };
 
@@ -39,15 +44,18 @@ pub fn init(ally: std.mem.Allocator) !Game {
 
     try sdl.image.init(.{ .png = true });
 
-    return .{
+    var g = Game{
         .updating_actors = false,
         .actors = std.ArrayList(*actor.Actor).init(ally),
         .pending_actors = std.ArrayList(*actor.Actor).init(ally),
         .ticks_count = sdl.getTicks(),
         .renderer = renderer,
         .running = true,
+        .texture_map = Texture_Map.init(ally),
         .ally = ally,
     };
+
+    load_data(&g);
 }
 
 pub fn deinit(g: *Game) void {
@@ -110,4 +118,20 @@ pub fn update(g: *Game) !void {
     for (dead_actors.items) |a| {
         actor.deinit(a);
     }
+}
+
+fn get_texture(g: *Game, name: []const u8) sdl.Texture {
+    if (g.texture_map.contains(name)) {
+        return g.texture_map.get();
+    }
+
+    return texture.load_texture(g.renderer, name);
+}
+
+fn load_data(g: *Game) void {
+    _ = g;
+}
+
+fn add_sprite(sprite: *component.Component) void {
+    const draw_order = sprite.data.sprite.draw_order;
 }
