@@ -24,8 +24,10 @@ pub fn build(b: *std.Build) void {
         .optimize = optimize,
     });
 
+    exe.linkSystemLibrary("SDL_image");
+
     const sdk = Sdk.init(b, null);
-    sdk.link(exe, .static);
+    sdk.link(exe, .dynamic);
 
     exe.addModule("sdl", sdk.getWrapperModule());
 
