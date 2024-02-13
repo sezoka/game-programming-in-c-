@@ -10,15 +10,20 @@ const THINKNESS = 15.0;
 
 const PADDLE_HEIGHT = THINKNESS * 8.0;
 
+const WIDTH = 1280;
+const HEIGHT = 720;
+
 const State = struct {
     is_running: bool,
     window: sdl.Window,
     renderer: sdl.Renderer,
     ticks_cnt: u32,
-    paddle_pos: Vec2,
-    paddle_dir: f32,
-    ball_pos: Vec2,
-    ball_vel: Vec2,
+    left_paddle_pos: Vec2,
+    right_paddle_pos: Vec2,
+    left_paddle_dir: f32,
+    right_paddle_dir: f32,
+    ball_pos: [3]Vec2,
+    ball_vel: [3]Vec2,
 };
 
 pub fn first_game_main() !void {
@@ -46,38 +51,58 @@ fn update_game(s: *State) void {
         delta_time = 0.05;
     }
 
-    if (s.paddle_dir != 0) {
-        s.paddle_pos.y += s.paddle_dir * 300.0 * delta_time;
+    if (s.left_paddle_dir != 0) {
+        s.left_paddle_pos.y += s.left_paddle_dir * 300.0 * delta_time;
 
-        if (s.paddle_pos.y < (PADDLE_HEIGHT / 2.0 + THINKNESS)) {
-            s.paddle_pos.y = PADDLE_HEIGHT / 2.0 + THINKNESS;
-        } else if ((768.0 - PADDLE_HEIGHT / 2.0 - THINKNESS) < s.paddle_pos.y) {
-            s.paddle_pos.y = 768.0 - PADDLE_HEIGHT / 2.0 - THINKNESS;
+        if (s.left_paddle_pos.y < (PADDLE_HEIGHT / 2.0 + THINKNESS)) {
+            s.left_paddle_pos.y = PADDLE_HEIGHT / 2.0 + THINKNESS;
+        } else if ((HEIGHT - PADDLE_HEIGHT / 2.0 - THINKNESS) < s.left_paddle_pos.y) {
+            s.left_paddle_pos.y = HEIGHT - PADDLE_HEIGHT / 2.0 - THINKNESS;
         }
     }
 
-    s.ball_pos.x += s.ball_vel.x * delta_time;
-    s.ball_pos.y += s.ball_vel.y * delta_time;
+    if (s.right_paddle_dir != 0) {
+        s.right_paddle_pos.y += s.right_paddle_dir * 300.0 * delta_time;
 
-    if (s.ball_pos.y <= THINKNESS and s.ball_vel.y < 0.0) {
-        s.ball_vel.y *= -1;
+        if (s.right_paddle_pos.y < (PADDLE_HEIGHT / 2.0 + THINKNESS)) {
+            s.right_paddle_pos.y = PADDLE_HEIGHT / 2.0 + THINKNESS;
+        } else if ((HEIGHT - PADDLE_HEIGHT / 2.0 - THINKNESS) < s.right_paddle_pos.y) {
+            s.right_paddle_pos.y = HEIGHT - PADDLE_HEIGHT / 2.0 - THINKNESS;
+        }
     }
 
-    if (768.0 - THINKNESS <= s.ball_pos.y and 0.0 < s.ball_vel.y) {
-        s.ball_vel.y *= -1;
-    }
+    for (0..3) |i| {
+        var ball_pos = &s.ball_pos[i];
+        var ball_vel = &s.ball_vel[i];
 
-    if (s.ball_pos.x <= THINKNESS and s.ball_vel.x < 0.0) {
-        s.ball_vel.x *= -1;
-    }
+        ball_pos.x += ball_vel.x * delta_time;
+        ball_pos.y += ball_vel.y * delta_time;
 
-    if (1024.0 - THINKNESS <= s.ball_pos.x and 0.0 < s.ball_vel.x) {
-        s.ball_vel.x *= -1;
-    }
+        if (ball_pos.y <= THINKNESS and ball_vel.y < 0.0) {
+            ball_vel.y *= -1;
+        }
 
-    const diff = @abs(s.ball_pos.y - s.paddle_pos.y);
-    if (diff <= PADDLE_HEIGHT / 2.0 and s.ball_pos.x <= 25.0 and s.ball_pos.x >= 20.0 and s.ball_vel.x < 0.0) {
-        s.ball_vel.x *= -1.0;
+        if (HEIGHT - THINKNESS <= ball_pos.y and 0.0 < ball_vel.y) {
+            ball_vel.y *= -1;
+        }
+
+        if (ball_pos.x <= THINKNESS and ball_vel.x < 0.0) {
+            ball_vel.x *= -1;
+        }
+
+        if (WIDTH - THINKNESS <= ball_pos.x and 0.0 < ball_vel.x) {
+            ball_vel.x *= -1;
+        }
+
+        var diff = @abs(ball_pos.y - s.left_paddle_pos.y);
+        if (diff <= PADDLE_HEIGHT / 2.0 and 20.0 <= ball_pos.x and ball_pos.x <= 25.0 and ball_vel.x < 0.0) {
+            ball_vel.x *= -1.0;
+        }
+
+        diff = @abs(ball_pos.y - s.right_paddle_pos.y);
+        if (diff <= PADDLE_HEIGHT / 2.0 and WIDTH - 25.0 <= ball_pos.x and ball_pos.x <= WIDTH - 20.0 and 0.0 < ball_vel.x) {
+            ball_vel.x *= -1.0;
+        }
     }
 }
 
@@ -87,17 +112,28 @@ fn generate_output(s: *State) !void {
 
     s.renderer.setColorRGB(128, 128, 128) catch undefined;
 
-    const ball_rect = sdl.Rectangle{
-        .x = @intFromFloat(s.ball_pos.x - THINKNESS / 2.0),
-        .y = @intFromFloat(s.ball_pos.y - THINKNESS / 2.0),
-        .width = @intFromFloat(THINKNESS),
-        .height = @intFromFloat(THINKNESS),
-    };
-    try s.renderer.fillRect(ball_rect);
+    for (0..3) |i| {
+        const ball_pos = &s.ball_pos[i];
+        const ball_rect = sdl.Rectangle{
+            .x = @intFromFloat(ball_pos.x - THINKNESS / 2.0),
+            .y = @intFromFloat(ball_pos.y - THINKNESS / 2.0),
+            .width = @intFromFloat(THINKNESS),
+            .height = @intFromFloat(THINKNESS),
+        };
+        try s.renderer.fillRect(ball_rect);
+    }
 
-    const paddle_rect = sdl.Rectangle{
-        .x = @intFromFloat(s.paddle_pos.x - THINKNESS / 2.0),
-        .y = @intFromFloat(s.paddle_pos.y - THINKNESS * 8.0 / 2.0),
+    var paddle_rect = sdl.Rectangle{
+        .x = @intFromFloat(s.left_paddle_pos.x - THINKNESS / 2.0),
+        .y = @intFromFloat(s.left_paddle_pos.y - THINKNESS * 8.0 / 2.0),
+        .width = @intFromFloat(THINKNESS),
+        .height = @intFromFloat(PADDLE_HEIGHT),
+    };
+    try s.renderer.fillRect(paddle_rect);
+
+    paddle_rect = sdl.Rectangle{
+        .x = @intFromFloat(s.right_paddle_pos.x - THINKNESS / 2.0),
+        .y = @intFromFloat(s.right_paddle_pos.y - THINKNESS * 8.0 / 2.0),
         .width = @intFromFloat(THINKNESS),
         .height = @intFromFloat(PADDLE_HEIGHT),
     };
@@ -121,12 +157,20 @@ fn process_input(s: *State) !void {
         s.is_running = false;
     }
 
-    s.paddle_dir = 0;
+    s.left_paddle_dir = 0;
     if (state.isPressed(.w)) {
-        s.paddle_dir -= 1;
+        s.left_paddle_dir -= 1;
     }
     if (state.isPressed(.s)) {
-        s.paddle_dir += 1;
+        s.left_paddle_dir += 1;
+    }
+
+    s.right_paddle_dir = 0;
+    if (state.isPressed(.up)) {
+        s.right_paddle_dir -= 1;
+    }
+    if (state.isPressed(.down)) {
+        s.right_paddle_dir += 1;
     }
 }
 
@@ -137,15 +181,16 @@ pub fn init(s: *State) !void {
         "CHAPTER 1",
         .default,
         .default,
-        1024,
-        768,
+        WIDTH,
+        HEIGHT,
         .{ .resizable = false },
     );
     s.window = window;
     s.is_running = true;
-    s.paddle_pos = .{ .x = THINKNESS, .y = 384 };
-    s.ball_pos = .{ .x = 512, .y = 384 };
-    s.ball_vel = .{ .x = -200, .y = 235 };
+    s.left_paddle_pos = .{ .x = THINKNESS, .y = 384 };
+    s.right_paddle_pos = .{ .x = WIDTH - THINKNESS, .y = 384 };
+    s.ball_pos = [3]Vec2{ .{ .x = WIDTH / 2, .y = HEIGHT / 2 }, .{ .x = WIDTH / 2, .y = HEIGHT / 2 }, .{ .x = WIDTH / 2, .y = HEIGHT / 2 } };
+    s.ball_vel = [3]Vec2{ .{ .x = -200, .y = 235 }, .{ .x = -200, .y = -235 }, .{ .x = 200, .y = 235 } };
     s.ticks_cnt = 0;
 
     const renderer = try sdl.createRenderer(window, null, .{ .accelerated = true, .present_vsync = false });
