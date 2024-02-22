@@ -1,0 +1,19 @@
+[gd_scene load_steps=3 format=3 uid="uid://kn0hwyrtnrb6"]
+
+[ext_resource type="Script" path="res://Ball.gd" id="1_4kyp1"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_m45p7"]
+size = Vector2(40, 40)
+
+[node name="Ball" type="Area2D"]
+script = ExtResource("1_4kyp1")
+
+[node name="Model" type="Polygon2D" parent="."]
+position = Vector2(640, 352)
+color = Color(0, 0.533333, 0.556863, 1)
+offset = Vector2(-597, -341)
+polygon = PackedVector2Array(576, 320, 616, 320, 616, 360, 576, 360)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(639, 351)
+shape = SubResource("RectangleShape2D_m45p7")

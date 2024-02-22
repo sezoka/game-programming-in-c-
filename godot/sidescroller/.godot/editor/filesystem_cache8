@@ -1,0 +1,14 @@
+ea4bc82a6ad023ab7ee23ee620429895
+::res://::1708600091
+Background.gd::GDScript::-1::1708597894::0::1::::<>ParallaxBackground<>::
+icon.svg::CompressedTexture2D::1718948063067775923::1708595992::1708595997::1::::<><>::
+Ship.gd::GDScript::-1::1708600076::0::1::::<>Node2D<>::
+sidescroller.tscn::PackedScene::3582987138679492136::1708600077::0::1::::<><>::uid://dud58e4juccb6::::res://assets/Farback01.png<>res://Background.gd<>uid://bd4u0oxmixxvt::::res://assets/Farback02.png<>uid://dmpgf44lcwryf::::res://assets/Stars.png<>uid://ba0o8grb1f3f8::::res://assets/Ship01.png<>res://Ship.gd<>uid://dlit7632imun::::res://assets/Ship02.png<>uid://w3rexdn8v8ny::::res://assets/Ship03.png<>uid://cohpsyduvgk22::::res://assets/Ship04.png
+::res://assets/::1708596483
+Farback01.png::CompressedTexture2D::8571112753412440825::1708596482::1708596483::1::::<><>::
+Farback02.png::CompressedTexture2D::2658113925592134065::1708596482::1708596483::1::::<><>::
+Ship01.png::CompressedTexture2D::2438939438124372707::1708596440::1708596441::1::::<><>::
+Ship02.png::CompressedTexture2D::233796082179822869::1708596440::1708596441::1::::<><>::
+Ship03.png::CompressedTexture2D::1602997682510125806::1708596440::1708596441::1::::<><>::
+Ship04.png::CompressedTexture2D::5770879987910695577::1708596440::1708596441::1::::<><>::
+Stars.png::CompressedTexture2D::8032868640452541417::1708596469::1708596483::1::::<><>::

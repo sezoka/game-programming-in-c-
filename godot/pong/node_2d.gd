@@ -10,23 +10,19 @@ func _ready():
 func _process(delta):
 	pass
 
-
-
 func _on_walls_area_entered(area):
 	if area.name == "Ball":
-		area.vel = Vector2(area.vel.x + randf_range(-0.1, +0.1), -area.vel.y)
+		area.vel = Vector2(-area.vel.x, area.vel.y + randf_range(-0.1, +0.1))
 
 
-func _on_ceil_floor_area_entered(area):
+func _on_ceil_floor_area_entered(area: Area2D):
 	if area.name == "Ball":
 		area.vel = Vector2(area.vel.x + randf_range(-0.1, +0.1), -area.vel.y)
-
 
 func _on_right_paddle_area_entered(area):
 	print(area.name)
 	if area.name == "Ball":
 		area.vel = Vector2(-area.vel.x, area.vel.y + randf_range(-0.1, +0.1))
-
 
 func _on_left_paddle_area_entered(area):
 	print(area.name)

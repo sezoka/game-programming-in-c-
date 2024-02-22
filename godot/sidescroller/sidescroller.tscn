@@ -1,0 +1,87 @@
+[gd_scene load_steps=11 format=3 uid="uid://brbvjlssirlum"]
+
+[ext_resource type="Texture2D" uid="uid://dud58e4juccb6" path="res://assets/Farback01.png" id="1_pglhy"]
+[ext_resource type="Script" path="res://Background.gd" id="1_vqpwj"]
+[ext_resource type="Texture2D" uid="uid://bd4u0oxmixxvt" path="res://assets/Farback02.png" id="3_k1kad"]
+[ext_resource type="Texture2D" uid="uid://dmpgf44lcwryf" path="res://assets/Stars.png" id="4_bdyhj"]
+[ext_resource type="Texture2D" uid="uid://ba0o8grb1f3f8" path="res://assets/Ship01.png" id="4_e0vlm"]
+[ext_resource type="Script" path="res://Ship.gd" id="5_pwart"]
+[ext_resource type="Texture2D" uid="uid://dlit7632imun" path="res://assets/Ship02.png" id="5_s0kd4"]
+[ext_resource type="Texture2D" uid="uid://w3rexdn8v8ny" path="res://assets/Ship03.png" id="6_f8b8b"]
+[ext_resource type="Texture2D" uid="uid://cohpsyduvgk22" path="res://assets/Ship04.png" id="7_qeqb2"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_bc6tw"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("4_e0vlm")
+}, {
+"duration": 1.0,
+"texture": ExtResource("5_s0kd4")
+}, {
+"duration": 1.0,
+"texture": ExtResource("6_f8b8b")
+}, {
+"duration": 1.0,
+"texture": ExtResource("7_qeqb2")
+}],
+"loop": true,
+"name": &"flying",
+"speed": 5.0
+}]
+
+[node name="Sidescroller" type="Node2D"]
+
+[node name="Background" type="ParallaxBackground" parent="."]
+script = ExtResource("1_vqpwj")
+
+[node name="Space" type="ParallaxLayer" parent="Background"]
+position = Vector2(512, 384)
+motion_mirroring = Vector2(2048, 0)
+metadata/_edit_lock_ = true
+
+[node name="Sprite1" type="Sprite2D" parent="Background/Space"]
+texture_filter = 1
+position = Vector2(-512, -384)
+texture = ExtResource("1_pglhy")
+centered = false
+metadata/_edit_lock_ = true
+
+[node name="Sprite2" type="Sprite2D" parent="Background/Space"]
+texture_filter = 1
+position = Vector2(512, -384)
+texture = ExtResource("3_k1kad")
+centered = false
+metadata/_edit_lock_ = true
+
+[node name="Stars" type="ParallaxLayer" parent="Background"]
+position = Vector2(512, 384)
+motion_scale = Vector2(2, 2)
+motion_mirroring = Vector2(2048, 0)
+metadata/_edit_lock_ = true
+
+[node name="Sprite" type="Sprite2D" parent="Background/Stars"]
+texture_filter = 1
+position = Vector2(-512, -384)
+texture = ExtResource("4_bdyhj")
+centered = false
+metadata/_edit_lock_ = true
+
+[node name="Sprite2" type="Sprite2D" parent="Background/Stars"]
+texture_filter = 1
+position = Vector2(513, -384)
+texture = ExtResource("4_bdyhj")
+centered = false
+metadata/_edit_lock_ = true
+
+[node name="Ship" type="Node2D" parent="."]
+position = Vector2(32, 360)
+script = ExtResource("5_pwart")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="Ship"]
+scale = Vector2(1.5, 1.5)
+sprite_frames = SubResource("SpriteFrames_bc6tw")
+animation = &"flying"
+autoplay = "flying"
+frame_progress = 0.426859
+metadata/_edit_lock_ = true

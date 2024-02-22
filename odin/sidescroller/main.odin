@@ -5,7 +5,7 @@ import "core:mem"
 import sdl "vendor:sdl2"
 import sdl_img "vendor:sdl2/image"
 
-sidescroller_main :: proc() {
+main :: proc() {
 	track: mem.Tracking_Allocator
 	mem.tracking_allocator_init(&track, context.allocator)
 	context.allocator = mem.tracking_allocator(&track)

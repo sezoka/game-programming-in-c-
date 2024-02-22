@@ -22,6 +22,10 @@ window/size/viewport_height=720
 window/size/resizable=false
 window/stretch/mode="canvas_items"
 
+[dotnet]
+
+project/assembly_name="Pong"
+
 [input]
 
 left_up={

@@ -201,8 +201,8 @@ load_data :: proc(g: ^Game) {
 	bg := &bg_component.variant.(BG_Sprite_Component)
 	bg.screen_size = {WIDTH, HEIGHT}
 	farback_textures := [dynamic]^sdl.Texture {
-		get_texture(g, "./sidescroller/assets/Farback01.png"),
-		get_texture(g, "./sidescroller/assets/Farback02.png"),
+		get_texture(g, "../../assets/sidescroller/Farback01.png"),
+		get_texture(g, "../../assets/sidescroller/Farback02.png"),
 	}
 	defer delete(farback_textures)
 	set_bg_sprite_textures(bg, farback_textures)
@@ -213,8 +213,8 @@ load_data :: proc(g: ^Game) {
 	bg = &bg_component.variant.(BG_Sprite_Component)
 	bg.screen_size = {WIDTH, HEIGHT}
 	stars_textures := [dynamic]^sdl.Texture {
-		get_texture(g, "./sidescroller/assets/Stars.png"),
-		get_texture(g, "./sidescroller/assets/Stars.png"),
+		get_texture(g, "../../assets/sidescroller/Stars.png"),
+		get_texture(g, "../../assets/sidescroller/Stars.png"),
 	}
 	defer delete(stars_textures)
 	set_bg_sprite_textures(bg, stars_textures)

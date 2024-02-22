@@ -17,10 +17,10 @@ create_ship_actor :: proc(g: ^Game) -> ^Actor {
 	asc_component := create_anim_sprite_component(actor, 120)
 	asc := &asc_component.variant.(Anim_Sprite_Component)
 	anims := [dynamic]^sdl.Texture {
-		get_texture(g, "./sidescroller/assets/Ship01.png"),
-		get_texture(g, "./sidescroller/assets/Ship02.png"),
-		get_texture(g, "./sidescroller/assets/Ship03.png"),
-		get_texture(g, "./sidescroller/assets/Ship04.png"),
+		get_texture(g, "../../assets/sidescroller/Ship01.png"),
+		get_texture(g, "../../assets/sidescroller/Ship02.png"),
+		get_texture(g, "../../assets/sidescroller/Ship03.png"),
+		get_texture(g, "../../assets/sidescroller/Ship04.png"),
 	}
 
 	set_anim_textures(asc, anims)

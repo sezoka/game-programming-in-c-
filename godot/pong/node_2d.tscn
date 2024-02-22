@@ -1,21 +1,16 @@
-[gd_scene load_steps=9 format=3 uid="uid://dq5rofc66gydb"]
+[gd_scene load_steps=8 format=3 uid="uid://dq5rofc66gydb"]
 
 [ext_resource type="Script" path="res://node_2d.gd" id="1_c1h0s"]
 [ext_resource type="Script" path="res://RightPaddle.gd" id="2_kysvo"]
 [ext_resource type="Script" path="res://LeftPaddle.gd" id="2_mulsy"]
-[ext_resource type="Script" path="res://Ball.gd" id="3_kskd2"]
+[ext_resource type="PackedScene" uid="uid://kn0hwyrtnrb6" path="res://ball.tscn" id="4_d3apm"]
+[ext_resource type="Script" path="res://CollisionShape2D2.cs" id="5_xq8w5"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_cg2dk"]
 size = Vector2(40, 192.4)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_m45p7"]
-size = Vector2(40, 40)
-
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_bpite"]
 size = Vector2(1280, 17.5)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_ks2gt"]
-size = Vector2(16, 739)
 
 [node name="Pong" type="Node2D"]
 script = ExtResource("1_c1h0s")
@@ -58,40 +53,19 @@ shape = SubResource("RectangleShape2D_cg2dk")
 color = Color(0.541176, 0.266667, 0.0784314, 1)
 polygon = PackedVector2Array(-24, -80, 16, -80, 16, 80, -24, 80)
 
-[node name="Ball" type="Area2D" parent="."]
-script = ExtResource("3_kskd2")
-
-[node name="Model" type="Polygon2D" parent="Ball"]
-position = Vector2(640, 352)
-color = Color(0, 0.533333, 0.556863, 1)
-offset = Vector2(-597, -341)
-polygon = PackedVector2Array(576, 320, 616, 320, 616, 360, 576, 360)
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Ball"]
-position = Vector2(639, 351)
-shape = SubResource("RectangleShape2D_m45p7")
+[node name="Ball" parent="." instance=ExtResource("4_d3apm")]
 
 [node name="ceil_floor" type="Area2D" parent="."]
 
 [node name="CollisionShape2D2" type="CollisionShape2D" parent="ceil_floor"]
 position = Vector2(640, 720.5)
 shape = SubResource("RectangleShape2D_bpite")
+script = ExtResource("5_xq8w5")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="ceil_floor"]
 position = Vector2(640, -0.75)
 shape = SubResource("RectangleShape2D_bpite")
 
-[node name="walls" type="Area2D" parent="."]
-
-[node name="CollisionShape2D3" type="CollisionShape2D" parent="walls"]
-position = Vector2(0, 359.5)
-shape = SubResource("RectangleShape2D_ks2gt")
-
-[node name="CollisionShape2D4" type="CollisionShape2D" parent="walls"]
-position = Vector2(1280, 360)
-shape = SubResource("RectangleShape2D_ks2gt")
-
 [connection signal="area_entered" from="RightPaddle" to="." method="_on_right_paddle_area_entered"]
 [connection signal="area_entered" from="LeftPaddle" to="." method="_on_left_paddle_area_entered"]
 [connection signal="area_entered" from="ceil_floor" to="." method="_on_ceil_floor_area_entered"]
-[connection signal="area_entered" from="walls" to="." method="_on_walls_area_entered"]
