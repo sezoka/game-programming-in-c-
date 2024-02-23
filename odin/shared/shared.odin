@@ -3,11 +3,9 @@ package shared
 import "core:strings"
 import sdl "vendor:sdl2"
 import sdl_img "vendor:sdl2/image"
+import "core:math/linalg"
 
-Vector2 :: struct {
-	x: f32,
-	y: f32,
-}
+Vector2 :: linalg.Vector2f64
 
 Actor_State :: enum {
 	Active,
