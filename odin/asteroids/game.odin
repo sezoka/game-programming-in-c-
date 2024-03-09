@@ -19,6 +19,7 @@ Game :: struct {
 	sprites:         [dynamic]^Component,
 	textures:        map[string]^sdl.Texture,
 	ship:            ^Actor,
+	asteroids:       [dynamic]^Actor,
 }
 
 init_game :: proc(g: ^Game) -> bool {
@@ -149,6 +150,9 @@ process_input :: proc(g: ^Game) {
 	for actor in &g.actors {
 		switch &inner in &actor.variant {
 		case Asteroid_Actor:
+		case Laser_Actor:
+    case Ship_Actor:
+      process_actor_input(actor)
 		}
 	}
 }
@@ -184,6 +188,7 @@ remove_sprite :: proc(g: ^Game, sprite_component: ^Component) {
 }
 
 load_data :: proc(g: ^Game) {
+  create_ship_actor(g)
 	create_asteroid_actor(g)
 	create_asteroid_actor(g)
 	create_asteroid_actor(g)

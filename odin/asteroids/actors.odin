@@ -11,7 +11,7 @@ Actor :: struct {
 	variant:    Actor_Variant,
 	state:      shared.Actor_State,
 	position:   shared.Vector2,
-	scale:      f32,
+	scale:      f64,
 	rotation:   f64,
 	components: [dynamic]^Component,
 	game:       ^Game,
@@ -19,6 +19,8 @@ Actor :: struct {
 
 Actor_Variant :: union {
 	Asteroid_Actor,
+	Laser_Actor,
+	Ship_Actor,
 }
 
 create_actor :: proc(g: ^Game) -> ^Actor {
@@ -41,7 +43,12 @@ destroy_actor :: proc(a: ^Actor) {
 	}
 	delete(a.components)
 	switch &actor in &a.variant {
+	case Ship_Actor:
 	case Asteroid_Actor:
+	case Laser_Actor:
+		{
+			destroy_component(actor.circle)
+		}
 	}
 	remove_actor(a.game, a)
 	free(a)
@@ -58,6 +65,9 @@ update_components :: proc(a: ^Actor, delta: f64) {
 	for comp in &a.components {
 		switch variant in &comp.variant {
 		case Sprite_Component:
+		case Circle_Component:
+		case Input_Component:
+			update_move_component(variant.move_comp, comp, delta)
 		case BG_Sprite_Component:
 			update_bg_sprite_component(&variant, comp, delta)
 		case Move_Component:
@@ -65,6 +75,26 @@ update_components :: proc(a: ^Actor, delta: f64) {
 		case Anim_Sprite_Component:
 			update_anim_sprite_component(&variant, comp, delta)
 		}
+	}
+}
+
+process_actor_input :: proc(a: ^Actor) {
+	// HERE
+	if a.state == .Active {
+		for comp in a.components {
+			switch c in comp.variant {
+			case .Input_Component:
+				process_input_input_component(comp)
+			}
+			comp->ProcessInput(keyState)
+		}
+
+		ActorInput(keyState)
+	}
+
+	switch actor in a {
+	case Ship_Actor:
+		process_input
 	}
 }
 
@@ -90,8 +120,12 @@ add_component :: proc(a: ^Actor, component: ^Component) {
 }
 
 update_actor_user_code :: proc(a: ^Actor, delta: f64) {
-	switch _ in a.variant {
+	switch &comp in &a.variant {
+	case Ship_Actor:
+		update_ship_actor(&comp, a, delta)
 	case Asteroid_Actor:
+	case Laser_Actor:
+		update_laser_actor(&comp, a, delta)
 	}
 }
 

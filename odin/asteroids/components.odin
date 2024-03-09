@@ -14,6 +14,8 @@ Component_Variant :: union {
 	Anim_Sprite_Component,
 	BG_Sprite_Component,
 	Move_Component,
+	Circle_Component,
+  Input_Component,
 }
 
 create_component :: proc(owner: ^Actor, update_order: i32 = 100) -> ^Component {
@@ -27,20 +29,20 @@ create_component :: proc(owner: ^Actor, update_order: i32 = 100) -> ^Component {
 destroy_component :: proc(c: ^Component) {
 	switch comp in c.variant {
 	case Move_Component:
-		{}
 	case Sprite_Component:
-		{}
 	case BG_Sprite_Component:
 		{delete(comp.bg_textures)}
 	case Anim_Sprite_Component:
 		{delete(comp.anim_textures)}
+	case Circle_Component:
+  case Input_Component:
 	}
 
 	free(c)
 }
 
-update_component :: proc{
-  update_bg_sprite_component,
-  update_anim_sprite_component,
-  update_move_component,
+update_component :: proc {
+	update_bg_sprite_component,
+	update_anim_sprite_component,
+	update_move_component,
 }

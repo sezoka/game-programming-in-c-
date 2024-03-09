@@ -29,8 +29,8 @@ draw_sprite_component :: proc(c: ^Component, s: ^Sprite_Component, renderer: ^sd
 	if s.texture == nil do return
 
 	r: sdl.Rect
-	r.w = i32(f32(s.width) * c.owner.scale)
-	r.h = i32(f32(s.height) * c.owner.scale)
+	r.w = i32(f64(s.width) * c.owner.scale)
+	r.h = i32(f64(s.height) * c.owner.scale)
 	r.x = i32(c.owner.position.x - f64(r.w / 2))
 	r.y = i32(c.owner.position.y - f64(r.y / 2))
 
