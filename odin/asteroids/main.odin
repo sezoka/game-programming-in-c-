@@ -26,9 +26,9 @@ main :: proc() {
 		mem.tracking_allocator_destroy(&track)
 	}
 
-	g: Game
+  g := create_game()
 	init_game(&g)
-	run_loop(&g)
+	run_game_loop(&g)
 	shutdown(&g)
 }
 

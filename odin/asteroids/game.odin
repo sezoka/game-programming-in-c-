@@ -1,6 +1,6 @@
 package asteroids
 
-import "../shared"
+import "core:math"
 import "core:fmt"
 import sdl "vendor:sdl2"
 import sdl_img "vendor:sdl2/image"
@@ -9,17 +9,25 @@ WIDTH :: 1280
 HEIGHT :: 720
 
 Game :: struct {
-	actors:          [dynamic]^Actor,
-	pending_actors:  [dynamic]^Actor,
-	updating_actors: bool,
-	ticks_count:     u32,
-	window:          ^sdl.Window,
-	renderer:        ^sdl.Renderer,
-	is_running:      bool,
-	sprites:         [dynamic]^Component,
-	textures:        map[string]^sdl.Texture,
-	ship:            ^Actor,
-	asteroids:       [dynamic]^Actor,
+	textures:           map[string]^sdl.Texture,
+	actors:             [dynamic]^Actor,
+	pending_actors:     [dynamic]^Actor,
+	sprites:            [dynamic]^Sprite_Component,
+	window:             ^sdl.Window,
+	renderer:           ^sdl.Renderer,
+	ticks_count:        u32,
+	is_running:         bool,
+	is_updating_actors: bool,
+
+	// Game-specific
+	// ship:               ^Ship_Actor,
+	// asteroids:          [dynamic]^Asteroid,
+}
+
+create_game :: proc() -> Game {
+	g: Game
+	g.is_running = true
+	return g
 }
 
 init_game :: proc(g: ^Game) -> bool {
@@ -42,13 +50,12 @@ init_game :: proc(g: ^Game) -> bool {
 	}
 
 	g^ = {
-		actors          = make([dynamic]^Actor),
-		pending_actors  = make([dynamic]^Actor),
-		updating_actors = false,
-		window          = window,
-		renderer        = renderer,
-		ticks_count     = sdl.GetTicks(),
-		is_running      = true,
+		actors         = make([dynamic]^Actor),
+		pending_actors = make([dynamic]^Actor),
+		window         = window,
+		renderer       = renderer,
+		ticks_count    = sdl.GetTicks(),
+		is_running     = true,
 	}
 
 	load_data(g)
@@ -56,34 +63,41 @@ init_game :: proc(g: ^Game) -> bool {
 	return false
 }
 
-add_actor :: proc(g: ^Game, actor: ^Actor) {
-	if g.updating_actors {
-		append(&g.pending_actors, actor)
-	} else {
-		append(&g.actors, actor)
+run_game_loop :: proc(g: ^Game) {
+	for g.is_running {
+		process_game_input(g)
+		update_game(g)
+		generate_output(g)
 	}
 }
 
-remove_actor :: proc(g: ^Game, actor: ^Actor) {
-	for a, i in g.pending_actors {
-		if a == actor {
-			unordered_remove(&g.pending_actors, i)
-			return
+
+process_game_input :: proc(g: ^Game) {
+	ev: sdl.Event
+	for (sdl.PollEvent(&ev)) {
+		#partial switch ev.type {
+		case .QUIT:
+			g.is_running = false
+			break
 		}
 	}
 
-	for a, i in g.actors {
-		if a == actor {
-			unordered_remove(&g.actors, i)
-			return
-		}
+	key_state := sdl.GetKeyboardState(nil)
+	if (key_state[sdl.SCANCODE_ESCAPE] != 0) {
+		g.is_running = false
 	}
+
+	g.is_updating_actors = true
+	for actor in g.actors {
+		process_input_for_actor(actor, key_state)
+	}
+	g.is_updating_actors = false
 }
 
 update_game :: proc(g: ^Game) {
 	for !sdl.TICKS_PASSED(sdl.GetTicks(), g.ticks_count + 16) {}
 
-	delta := f64(sdl.GetTicks() - g.ticks_count) / 1000
+	delta := f32(sdl.GetTicks() - g.ticks_count) / 1000
 	g.ticks_count = sdl.GetTicks()
 
 	if 0.05 < delta {
@@ -91,11 +105,11 @@ update_game :: proc(g: ^Game) {
 	}
 
 	{
-		g.updating_actors = true
+		g.is_updating_actors = true
 		for actor in g.actors {
 			update_actor(actor, delta)
 		}
-		g.updating_actors = false
+		g.is_updating_actors = false
 	}
 
 	for actor in g.pending_actors {
@@ -116,45 +130,15 @@ update_game :: proc(g: ^Game) {
 	}
 }
 
-run_loop :: proc(g: ^Game) {
-	for g.is_running {
-		process_input(g)
-		update_game(g)
-		generate_output(g)
-	}
-}
-
 generate_output :: proc(g: ^Game) {
 	sdl.SetRenderDrawColor(g.renderer, 0, 0, 0, 255)
 	sdl.RenderClear(g.renderer)
 
 	for sprite in g.sprites {
-		draw_sprite(sprite, g.renderer)
+		draw_sprite_component(sprite, g.renderer)
 	}
 
 	sdl.RenderPresent(g.renderer)
-}
-
-process_input :: proc(g: ^Game) {
-	event: sdl.Event
-	for sdl.PollEvent(&event) {
-		#partial switch event.type {
-		case .QUIT:
-			g.is_running = false
-		case:
-		}
-	}
-
-	state := sdl.GetKeyboardState(nil)
-
-	for actor in &g.actors {
-		switch &inner in &actor.variant {
-		case Asteroid_Actor:
-		case Laser_Actor:
-    case Ship_Actor:
-      process_actor_input(actor)
-		}
-	}
 }
 
 shutdown :: proc(g: ^Game) {
@@ -165,62 +149,62 @@ shutdown :: proc(g: ^Game) {
 	sdl.Quit()
 }
 
-add_sprite :: proc(g: ^Game, sprite_component: ^Component) {
-	sprite := sprite_component.variant.(Sprite_Component)
+load_data :: proc(g: ^Game) {
+  ship := create_ship_actor(g)
+  ship.position = {512, 384}
+  ship.rotation = math.PI / 2
 
-	insert_idx := 0
-	for ; insert_idx < len(g.sprites); insert_idx += 1 {
-		if sprite.draw_order < get_sprite_draw_order(g.sprites[insert_idx]) {
-			inject_at(&g.sprites, insert_idx, sprite_component)
+	num_asteroids := 20
+	for _ in 0 ..< num_asteroids {
+		create_asteroid_actor(g)
+	}
+
+}
+
+unload_data :: proc(g: ^Game) {
+
+}
+
+add_actor_to_game :: proc(g: ^Game, a: ^Actor) {
+	if g.is_updating_actors {
+		append(&g.pending_actors, a)
+	} else {
+		append(&g.actors, a)
+	}
+}
+
+remove_actor_from_game :: proc(g: ^Game, a: ^Actor) {
+	for actor, i in g.pending_actors {
+		if a == actor {
+			unordered_remove(&g.pending_actors, i)
 			return
 		}
 	}
 
-	append(&g.sprites, sprite_component)
+	for actor, i in g.actors {
+		if a == actor {
+			unordered_remove(&g.actors, i)
+			return
+		}
+	}
 }
 
-remove_sprite :: proc(g: ^Game, sprite_component: ^Component) {
+add_sprite_to_game :: proc(g: ^Game, sc: ^Sprite_Component) {
+	insert_idx := 0
+	for ; insert_idx < len(g.sprites); insert_idx += 1 {
+		if sc.draw_order < g.sprites[insert_idx].draw_order {
+			inject_at(&g.sprites, insert_idx, sc)
+			return
+		}
+	}
+
+	append(&g.sprites, sc)
+}
+
+remove_sprite_from_game :: proc(g: ^Game, sprite_component: ^Sprite_Component) {
 	for sprite, i in g.sprites {
 		if sprite == sprite_component {
 			ordered_remove(&g.sprites, i)
 		}
 	}
-}
-
-load_data :: proc(g: ^Game) {
-  create_ship_actor(g)
-	create_asteroid_actor(g)
-	create_asteroid_actor(g)
-	create_asteroid_actor(g)
-	create_asteroid_actor(g)
-	create_asteroid_actor(g)
-	create_asteroid_actor(g)
-	create_asteroid_actor(g)
-	create_asteroid_actor(g)
-	create_asteroid_actor(g)
-	create_asteroid_actor(g)
-	create_asteroid_actor(g)
-	create_asteroid_actor(g)
-}
-
-unload_data :: proc(g: ^Game) {
-	for len(g.pending_actors) != 0 {
-		destroy_actor(g.pending_actors[0])
-	}
-	delete(g.pending_actors)
-
-	for len(g.actors) != 0 {
-		destroy_actor(g.actors[0])
-	}
-	delete(g.actors)
-
-	for _, texture in g.textures {
-		sdl.DestroyTexture(texture)
-	}
-	delete(g.textures)
-
-	for sprite in g.sprites {
-		destroy_component(sprite)
-	}
-	delete(g.sprites)
 }

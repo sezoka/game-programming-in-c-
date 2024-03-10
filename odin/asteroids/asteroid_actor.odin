@@ -1,38 +1,33 @@
 package asteroids
 
-import "../shared"
-import "core:fmt"
 import "core:math"
+import "core:fmt"
 import "core:math/rand"
 
 Asteroid_Actor :: struct {
-  circle: ^Component
+	using base: ^Actor,
+	circle:     ^Circle_Component,
 }
 
 
-create_asteroid_actor :: proc(g: ^Game) -> ^Actor {
-	actor := create_actor(g)
-	asteroid: Asteroid_Actor
+create_asteroid_actor :: proc(g: ^Game) -> ^Asteroid_Actor {
+	asteroid := create_actor(Asteroid_Actor, g)
 
-	actor.position = shared.Vector2{rand.float64_range(0, WIDTH), rand.float64_range(0, HEIGHT)}
-	actor.rotation = rand.float64_range(0, math.PI * 2)
+	asteroid.position = Vector2{rand.float32_range(0, WIDTH), rand.float32_range(0, HEIGHT)}
+	asteroid.rotation = rand.float32_range(0, math.PI * 2)
 
-	sprite := create_sprite_component(actor)
+	sc := create_sprite_component(asteroid.base)
 	texture := get_texture(g, "../../assets/asteroids/Asteroid.png")
-	set_texture(&sprite.variant.(Sprite_Component), texture)
-	add_component(actor, sprite)
+	set_sprite_texture(sc, texture)
+	add_component_to_actor(asteroid, sc)
 
-	move := create_move_component(actor)
-	mc := &move.variant.(Move_Component)
+	mc := create_move_component(asteroid.base)
 	mc.forward_speed = 10
-	add_component(actor, move)
+	add_component_to_actor(asteroid, mc)
 
-  circle := create_circle_component(actor)
-  c := circle.variant.(Circle_Component)
-  c.radius = 10
-  asteroid.circle = circle
+	circle := create_circle_component(asteroid)
+	circle.radius = 10
+	asteroid.circle = circle
 
-	actor.variant = asteroid
-
-	return actor
+	return asteroid
 }
