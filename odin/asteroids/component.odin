@@ -12,27 +12,33 @@ Component_Variant :: union {
 Component :: struct {
 	owner:        ^Actor,
 	update_order: i32,
-	derived_comp: Component_Variant,
+	derived:      Component_Variant,
 }
 
 create_component :: proc($T: typeid, a: ^Actor, update_order: i32 = 100) -> ^T {
 	comp := new(Component)
-	comp.derived_comp = T {
+	comp.derived = T {
 		base = comp,
 	}
 	comp.owner = a
 	comp.update_order = update_order
 	add_component_to_actor(a, comp)
-	return &comp.derived_comp.(T)
+	return &comp.derived.(T)
 }
 
 destroy_component :: proc(c: ^Component) {
-	remove_component_from_actor(c.owner, c)
+	switch comp in &c.derived {
+	case Sprite_Component:
+		destroy_sprite_component(&comp)
+	case Circle_Component, Move_Component:
+	}
+
 	free(c)
+	remove_component_from_actor(c.owner, c)
 }
 
 update_component :: proc(c: ^Component, delta: f32) {
-	switch comp in &c.derived_comp {
+	switch comp in &c.derived {
 	case Move_Component:
 		update_move_component(&comp, delta)
 	case Sprite_Component, Circle_Component:
@@ -40,7 +46,7 @@ update_component :: proc(c: ^Component, delta: f32) {
 }
 
 process_input_for_component :: proc(c: ^Component, key_state: [^]u8) {
-	#partial switch comp in &c.derived_comp {
+	#partial switch comp in &c.derived {
 	case Move_Component:
 		switch move_comp in &comp.derived {
 		case Input_Component:

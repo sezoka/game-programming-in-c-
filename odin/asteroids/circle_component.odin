@@ -1,6 +1,7 @@
 package asteroids
 
 import "core:math/linalg"
+import "core:fmt"
 
 Circle_Component :: struct {
 	using base: ^Component,
@@ -12,15 +13,15 @@ create_circle_component :: proc(owner: ^Actor) -> ^Circle_Component {
 	return comp
 }
 
-get_circle_component_center :: proc(cc: Circle_Component) -> Vector2 {
+get_circle_component_center :: proc(cc: ^Circle_Component) -> Vector2 {
 	return cc.owner.position
 }
 
-get_circle_component_radius :: proc(cc: Circle_Component) -> f32 {
+get_circle_component_radius :: proc(cc: ^Circle_Component) -> f32 {
 	return cc.owner.scale * cc.radius
 }
 
-intersect :: proc(a: Circle_Component, b: Circle_Component) -> bool {
+check_is_circles_intersect :: proc(a: ^Circle_Component, b: ^Circle_Component) -> bool {
 	diff := get_circle_component_center(a) - get_circle_component_center(b)
 	dist_sq := linalg.length2(diff)
 	radi_sq := get_circle_component_radius(a) + get_circle_component_radius(b)

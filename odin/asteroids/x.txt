@@ -1,0 +1,105 @@
+1 &Component{owner = 0x1474B38, update_order = 10, derived = Move_Component{angular_speed = 0, forward_speed = 10, derived = nil, base = 0x1474C88}} 
+2 &Component{owner = 0x1474B38, update_order = 100, derived = Sprite_Component{base = 0x1474BB8, texture = 0x143A170, draw_order = 100, tex_width = 64, tex_height = 64, derived_sprite = nil}} 
+3 &Component{owner = 0x1474B38, update_order = 10, derived = Move_Component{angular_speed = 0, forward_speed = 10, derived = nil, base = 0x1474C88}} 
+4 &Component{owner = 0x1474B38, update_order = 100, derived = Circle_Component{base = 0x1474CF8, radius = 10}} 
+5 &Component{owner = 0x147AE38, update_order = 10, derived = Move_Component{angular_speed = 0, forward_speed = 10, derived = nil, base = 0x147B048}} 
+6 &Component{owner = 0x147AE38, update_order = 100, derived = Sprite_Component{base = 0x147AEB8, texture = 0x143A170, draw_order = 100, tex_width = 64, tex_height = 64, derived_sprite = nil}} 
+7 &Component{owner = 0x147AE38, update_order = 10, derived = Move_Component{angular_speed = 0, forward_speed = 10, derived = nil, base = 0x147B048}} 
+8 &Component{owner = 0x147AE38, update_order = 100, derived = Circle_Component{base = 0x147A7D8, radius = 10}} 
+9 &Component{owner = 0x147AC08, update_order = 10, derived = Move_Component{angular_speed = 0, forward_speed = 10, derived = nil, base = 0x147AD58}} 
+10 &Component{owner = 0x147AC08, update_order = 100, derived = Sprite_Component{base = 0x147AC88, texture = 0x143A170, draw_order = 100, tex_width = 64, tex_height = 64, derived_sprite = nil}} 
+11 &Component{owner = 0x147AC08, update_order = 10, derived = Move_Component{angular_speed = 0, forward_speed = 10, derived = nil, base = 0x147AD58}} 
+12 &Component{owner = 0x147AC08, update_order = 100, derived = Circle_Component{base = 0x147ADC8, radius = 10}} 
+13 &Component{owner = 0x147A688, update_order = 10, derived = Move_Component{angular_speed = 0, forward_speed = 10, derived = nil, base = 0x147A888}} 
+14 &Component{owner = 0x147A688, update_order = 100, derived = Sprite_Component{base = 0x147A708, texture = 0x143A170, draw_order = 100, tex_width = 64, tex_height = 64, derived_sprite = nil}} 
+15 &Component{owner = 0x147A688, update_order = 10, derived = Move_Component{angular_speed = 0, forward_speed = 10, derived = nil, base = 0x147A888}} 
+16 &Component{owner = 0x147A688, update_order = 100, derived = Circle_Component{base = 0x147F088, radius = 10}} 
+17 &Component{owner = 0x146E148, update_order = 10, derived = Move_Component{angular_speed = 0, forward_speed = 10, derived = nil, base = 0x14367F8}} 
+18 &Component{owner = 0x146E148, update_order = 100, derived = Sprite_Component{base = 0x146E328, texture = 0x143A170, draw_order = 100, tex_width = 64, tex_height = 64, derived_sprite = nil}} 
+19 &Component{owner = 0x146E148, update_order = 10, derived = Move_Component{angular_speed = 0, forward_speed = 10, derived = nil, base = 0x14367F8}} 
+20 &Component{owner = 0x146E148, update_order = 100, derived = Circle_Component{base = 0x1436868, radius = 10}} 
+21 &Component{owner = 0x1436C18, update_order = 10, derived = Move_Component{angular_speed = 0, forward_speed = 10, derived = nil, base = 0x1439C68}} 
+22 &Component{owner = 0x1436C18, update_order = 100, derived = Sprite_Component{base = 0x147EFB8, texture = 0x143A170, draw_order = 100, tex_width = 64, tex_height = 64, derived_sprite = nil}} 
+23 &Component{owner = 0x1436C18, update_order = 10, derived = Move_Component{angular_speed = 0, forward_speed = 10, derived = nil, base = 0x1439C68}} 
+24 &Component{owner = 0x1436C18, update_order = 100, derived = Circle_Component{base = 0x147F128, radius = 10}} 
+25 &Component{owner = 0x143D738, update_order = 10, derived = Move_Component{angular_speed = 0, forward_speed = 10, derived = nil, base = 0x1436B38}} 
+26 &Component{owner = 0x143D738, update_order = 100, derived = Sprite_Component{base = 0x1439DD8, texture = 0x143A170, draw_order = 100, tex_width = 64, tex_height = 64, derived_sprite = nil}} 
+27 &Component{owner = 0x143D738, update_order = 10, derived = Move_Component{angular_speed = 0, forward_speed = 10, derived = nil, base = 0x1436B38}} 
+28 &Component{owner = 0x143D738, update_order = 100, derived = Circle_Component{base = 0x1436BA8, radius = 10}} 
+29 &Component{owner = 0x146DDD8, update_order = 10, derived = Move_Component{angular_speed = 0, forward_speed = 10, derived = nil, base = 0x1439CF8}} 
+30 &Component{owner = 0x146DDD8, update_order = 100, derived = Sprite_Component{base = 0x146DE58, texture = 0x143A170, draw_order = 100, tex_width = 64, tex_height = 64, derived_sprite = nil}} 
+31 &Component{owner = 0x146DDD8, update_order = 10, derived = Move_Component{angular_speed = 0, forward_speed = 10, derived = nil, base = 0x1439CF8}} 
+32 &Component{owner = 0x146DDD8, update_order = 100, derived = Circle_Component{base = 0x1439D68, radius = 10}} 
+33 &Component{owner = 0x14741F8, update_order = 10, derived = Move_Component{angular_speed = 0, forward_speed = 10, derived = nil, base = 0x14742E8}} 
+34 &Component{owner = 0x14741F8, update_order = 100, derived = Sprite_Component{base = 0x1474278, texture = 0x143A170, draw_order = 100, tex_width = 64, tex_height = 64, derived_sprite = nil}} 
+35 &Component{owner = 0x14741F8, update_order = 10, derived = Move_Component{angular_speed = 0, forward_speed = 10, derived = nil, base = 0x14742E8}} 
+36 &Component{owner = 0x14741F8, update_order = 100, derived = Circle_Component{base = 0x146DD68, radius = 10}} 
+37 &Component{owner = 0x1478678, update_order = 10, derived = Move_Component{angular_speed = 0, forward_speed = 10, derived = nil, base = 0x1436268}} 
+38 &Component{owner = 0x1478678, update_order = 100, derived = Sprite_Component{base = 0x143D668, texture = 0x143A170, draw_order = 100, tex_width = 64, tex_height = 64, derived_sprite = nil}} 
+39 &Component{owner = 0x1478678, update_order = 10, derived = Move_Component{angular_speed = 0, forward_speed = 10, derived = nil, base = 0x1436268}} 
+40 &Component{owner = 0x1478678, update_order = 100, derived = Circle_Component{base = 0x1474188, radius = 10}} 
+41 &Component{owner = 0x753F98, update_order = 10, derived = Move_Component{angular_speed = 0, forward_speed = 10, derived = nil, base = 0x1478598}} 
+42 &Component{owner = 0x753F98, update_order = 100, derived = Sprite_Component{base = 0x1439FD8, texture = 0x143A170, draw_order = 100, tex_width = 64, tex_height = 64, derived_sprite = nil}} 
+43 &Component{owner = 0x753F98, update_order = 10, derived = Move_Component{angular_speed = 0, forward_speed = 10, derived = nil, base = 0x1478598}} 
+44 &Component{owner = 0x753F98, update_order = 100, derived = Circle_Component{base = 0x1478608, radius = 10}} 
+45 &Component{owner = 0x146D998, update_order = 10, derived = Move_Component{angular_speed = 0, forward_speed = 10, derived = nil, base = 0x1439EF8}} 
+46 &Component{owner = 0x146D998, update_order = 100, derived = Sprite_Component{base = 0x146DA18, texture = 0x143A170, draw_order = 100, tex_width = 64, tex_height = 64, derived_sprite = nil}} 
+47 &Component{owner = 0x146D998, update_order = 10, derived = Move_Component{angular_speed = 0, forward_speed = 10, derived = nil, base = 0x1439EF8}} 
+48 &Component{owner = 0x146D998, update_order = 100, derived = Circle_Component{base = 0x1439F68, radius = 10}} 
+49 &Component{owner = 0x146E688, update_order = 10, derived = Move_Component{angular_speed = 0, forward_speed = 10, derived = nil, base = 0x147AA68}} 
+50 &Component{owner = 0x146E688, update_order = 100, derived = Sprite_Component{base = 0x146E708, texture = 0x143A170, draw_order = 100, tex_width = 64, tex_height = 64, derived_sprite = nil}} 
+51 &Component{owner = 0x146E688, update_order = 10, derived = Move_Component{angular_speed = 0, forward_speed = 10, derived = nil, base = 0x147AA68}} 
+52 &Component{owner = 0x146E688, update_order = 100, derived = Circle_Component{base = 0x146D928, radius = 10}} 
+53 &Component{owner = 0x75F408, update_order = 10, derived = Move_Component{angular_speed = 0, forward_speed = 10, derived = nil, base = 0x143D468}} 
+54 &Component{owner = 0x75F408, update_order = 100, derived = Sprite_Component{base = 0x75FBD8, texture = 0x143A170, draw_order = 100, tex_width = 64, tex_height = 64, derived_sprite = nil}} 
+55 &Component{owner = 0x75F408, update_order = 10, derived = Move_Component{angular_speed = 0, forward_speed = 10, derived = nil, base = 0x143D468}} 
+56 &Component{owner = 0x75F408, update_order = 100, derived = Circle_Component{base = 0x143D4D8, radius = 10}} 
+57 &Component{owner = 0x143A4E8, update_order = 10, derived = Move_Component{angular_speed = 0, forward_speed = 10, derived = nil, base = 0x1403718}} 
+58 &Component{owner = 0x143A4E8, update_order = 100, derived = Sprite_Component{base = 0x143A568, texture = 0x143A170, draw_order = 100, tex_width = 64, tex_height = 64, derived_sprite = nil}} 
+59 &Component{owner = 0x143A4E8, update_order = 10, derived = Move_Component{angular_speed = 0, forward_speed = 10, derived = nil, base = 0x1403718}} 
+60 &Component{owner = 0x143A4E8, update_order = 100, derived = Circle_Component{base = 0x75F398, radius = 10}} 
+61 &Component{owner = 0x143A8C8, update_order = 10, derived = Move_Component{angular_speed = 0, forward_speed = 10, derived = nil, base = 0x146D628}} 
+62 &Component{owner = 0x143A8C8, update_order = 100, derived = Sprite_Component{base = 0x143A948, texture = 0x143A170, draw_order = 100, tex_width = 64, tex_height = 64, derived_sprite = nil}} 
+63 &Component{owner = 0x143A8C8, update_order = 10, derived = Move_Component{angular_speed = 0, forward_speed = 10, derived = nil, base = 0x146D628}} 
+64 &Component{owner = 0x143A8C8, update_order = 100, derived = Circle_Component{base = 0x146D698, radius = 10}} 
+65 &Component{owner = 0x75FA38, update_order = 10, derived = Move_Component{angular_speed = 0, forward_speed = 10, derived = nil, base = 0x14751B8}} 
+66 &Component{owner = 0x75FA38, update_order = 100, derived = Sprite_Component{base = 0x1436788, texture = 0x143A170, draw_order = 100, tex_width = 64, tex_height = 64, derived_sprite = nil}} 
+67 &Component{owner = 0x75FA38, update_order = 10, derived = Move_Component{angular_speed = 0, forward_speed = 10, derived = nil, base = 0x14751B8}} 
+68 &Component{owner = 0x75FA38, update_order = 100, derived = Circle_Component{base = 0x1475228, radius = 10}} 
+69 &Component{owner = 0x14743D8, update_order = 10, derived = Move_Component{angular_speed = 0, forward_speed = 10, derived = nil, base = 0x11C5308}} 
+70 &Component{owner = 0x14743D8, update_order = 100, derived = Sprite_Component{base = 0xFBB938, texture = 0x143A170, draw_order = 100, tex_width = 64, tex_height = 64, derived_sprite = nil}} 
+71 &Component{owner = 0x14743D8, update_order = 10, derived = Move_Component{angular_speed = 0, forward_speed = 10, derived = nil, base = 0x11C5308}} 
+72 &Component{owner = 0x14743D8, update_order = 100, derived = Circle_Component{base = 0x1435AD8, radius = 10}} 
+73 &Component{owner = 0x1403AD8, update_order = 10, derived = Move_Component{angular_speed = 0, forward_speed = 10, derived = nil, base = 0x14750A8}} 
+74 &Component{owner = 0x1403AD8, update_order = 100, derived = Sprite_Component{base = 0x147CEE8, texture = 0x143A170, draw_order = 100, tex_width = 64, tex_height = 64, derived_sprite = nil}} 
+75 &Component{owner = 0x1403AD8, update_order = 10, derived = Move_Component{angular_speed = 0, forward_speed = 10, derived = nil, base = 0x14750A8}} 
+76 &Component{owner = 0x1403AD8, update_order = 100, derived = Circle_Component{base = 0x147DB48, radius = 10}} 
+77 &Component{owner = 0x143A3D8, update_order = 10, derived = Move_Component{angular_speed = 0, forward_speed = 10, derived = nil, base = 0x1402E28}} 
+78 &Component{owner = 0x143A3D8, update_order = 100, derived = Sprite_Component{base = 0x146D788, texture = 0x143A170, draw_order = 100, tex_width = 64, tex_height = 64, derived_sprite = nil}} 
+79 &Component{owner = 0x143A3D8, update_order = 10, derived = Move_Component{angular_speed = 0, forward_speed = 10, derived = nil, base = 0x1402E28}} 
+80 &Component{owner = 0x143A3D8, update_order = 100, derived = Circle_Component{base = 0x1403548, radius = 10}} 
+81 &Component{owner = 0x14361E8, update_order = 10, derived = Move_Component{angular_speed = 0, forward_speed = 0, derived = Input_Component{base = 0xFF51F8, max_forward_speed = 300, max_angular_speed = 6.2831855, forward_key = "W", back_key = "S", clockwise_key = "D", counter_clockwise_key = "A"}, base = 0xFF51E8}} 
+82 &Component{owner = 0x14361E8, update_order = 150, derived = Sprite_Component{base = 0x14368E8, texture = 0x1435B80, draw_order = 150, tex_width = 64, tex_height = 64, derived_sprite = nil}} 
+83 &Component{owner = 0x14361E8, update_order = 10, derived = Move_Component{angular_speed = 0, forward_speed = 0, derived = Input_Component{base = 0xFF51F8, max_forward_speed = 300, max_angular_speed = 6.2831855, forward_key = "W", back_key = "S", clockwise_key = "D", counter_clockwise_key = "A"}, base = 0xFF51E8}} 
+
+- 1474C88 @ /home/sezoka/proj/game-programming-in-cpp/odin/asteroids/component.odin(41:2)
+- 147B048 @ /home/sezoka/proj/game-programming-in-cpp/odin/asteroids/component.odin(41:2)
+- 147AD58 @ /home/sezoka/proj/game-programming-in-cpp/odin/asteroids/component.odin(41:2)
+- 147A888 @ /home/sezoka/proj/game-programming-in-cpp/odin/asteroids/component.odin(41:2)
+- 14367F8 @ /home/sezoka/proj/game-programming-in-cpp/odin/asteroids/component.odin(41:2)
+- 1439C68 @ /home/sezoka/proj/game-programming-in-cpp/odin/asteroids/component.odin(41:2)
+- 1436B38 @ /home/sezoka/proj/game-programming-in-cpp/odin/asteroids/component.odin(41:2)
+- 1439CF8 @ /home/sezoka/proj/game-programming-in-cpp/odin/asteroids/component.odin(41:2)
+- 14742E8 @ /home/sezoka/proj/game-programming-in-cpp/odin/asteroids/component.odin(41:2)
+- 1436268 @ /home/sezoka/proj/game-programming-in-cpp/odin/asteroids/component.odin(41:2)
+- 1478598 @ /home/sezoka/proj/game-programming-in-cpp/odin/asteroids/component.odin(41:2)
+- 1439EF8 @ /home/sezoka/proj/game-programming-in-cpp/odin/asteroids/component.odin(41:2)
+- 147AA68 @ /home/sezoka/proj/game-programming-in-cpp/odin/asteroids/component.odin(41:2)
+- 143D468 @ /home/sezoka/proj/game-programming-in-cpp/odin/asteroids/component.odin(41:2)
+- 1403718 @ /home/sezoka/proj/game-programming-in-cpp/odin/asteroids/component.odin(41:2)
+- 146D628 @ /home/sezoka/proj/game-programming-in-cpp/odin/asteroids/component.odin(41:2)
+- 14751B8 @ /home/sezoka/proj/game-programming-in-cpp/odin/asteroids/component.odin(41:2)
+- 11C5308 @ /home/sezoka/proj/game-programming-in-cpp/odin/asteroids/component.odin(41:2)
+- 14750A8 @ /home/sezoka/proj/game-programming-in-cpp/odin/asteroids/component.odin(41:2)
+- 1402E28 @ /home/sezoka/proj/game-programming-in-cpp/odin/asteroids/component.odin(41:2)
+- FF51E8 @ /home/sezoka/proj/game-programming-in-cpp/odin/asteroids/component.odin(41:2)

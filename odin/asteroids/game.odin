@@ -1,7 +1,7 @@
 package asteroids
 
-import "core:math"
 import "core:fmt"
+import "core:math"
 import sdl "vendor:sdl2"
 import sdl_img "vendor:sdl2/image"
 
@@ -18,10 +18,8 @@ Game :: struct {
 	ticks_count:        u32,
 	is_running:         bool,
 	is_updating_actors: bool,
-
-	// Game-specific
-	// ship:               ^Ship_Actor,
-	// asteroids:          [dynamic]^Asteroid,
+	ship:               ^Ship_Actor,
+	asteroids:          [dynamic]^Asteroid_Actor,
 }
 
 create_game :: proc() -> Game {
@@ -119,13 +117,14 @@ update_game :: proc(g: ^Game) {
 
 	{
 		dead_actors: [dynamic]^Actor
+		defer delete(dead_actors)
 		for actor in g.actors {
 			if actor.state == .Dead {
 				append(&dead_actors, actor)
 			}
 		}
 		for actor in dead_actors {
-			free(actor)
+			destroy_actor(actor)
 		}
 	}
 }
@@ -150,19 +149,42 @@ shutdown :: proc(g: ^Game) {
 }
 
 load_data :: proc(g: ^Game) {
-  ship := create_ship_actor(g)
-  ship.position = {512, 384}
-  ship.rotation = math.PI / 2
+	ship := create_ship_actor(g)
+	ship.position = {512, 384}
+	ship.rotation = math.PI / 2
+	g.ship = ship
 
 	num_asteroids := 20
 	for _ in 0 ..< num_asteroids {
-		create_asteroid_actor(g)
+		append(&g.asteroids, create_asteroid_actor(g))
 	}
+}
 
+remove_asteroid_from_game :: proc(g: ^Game, a: ^Asteroid_Actor) {
+	for ast, i in &g.asteroids {
+		if ast == a {
+			unordered_remove(&g.asteroids, i)
+			return
+		}
+	}
 }
 
 unload_data :: proc(g: ^Game) {
+	// Delete actors
+	for (len(g.actors) != 0) {
+		destroy_actor(g.actors[len(g.actors) - 1])
+	}
 
+	// Destroy textures
+	for _, tex in g.textures {
+		sdl.DestroyTexture(tex)
+	}
+	delete(g.textures)
+
+	delete(g.asteroids)
+	delete(g.sprites)
+	delete(g.pending_actors)
+	delete(g.actors)
 }
 
 add_actor_to_game :: proc(g: ^Game, a: ^Actor) {

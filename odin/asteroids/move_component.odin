@@ -8,10 +8,10 @@ Move_Comp_Variant :: union {
 }
 
 Move_Component :: struct {
-	using base:    ^Component,
 	angular_speed: f32,
 	forward_speed: f32,
 	derived:       Move_Comp_Variant,
+	using base:    ^Component,
 }
 
 create_move_component :: proc(a: ^Actor, update_order: i32 = 10) -> ^Move_Component {

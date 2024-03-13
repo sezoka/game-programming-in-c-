@@ -19,11 +19,9 @@ create_asteroid_actor :: proc(g: ^Game) -> ^Asteroid_Actor {
 	sc := create_sprite_component(asteroid.base)
 	texture := get_texture(g, "../../assets/asteroids/Asteroid.png")
 	set_sprite_texture(sc, texture)
-	add_component_to_actor(asteroid, sc)
 
 	mc := create_move_component(asteroid.base)
 	mc.forward_speed = 10
-	add_component_to_actor(asteroid, mc)
 
 	circle := create_circle_component(asteroid)
 	circle.radius = 10

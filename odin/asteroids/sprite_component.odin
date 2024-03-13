@@ -18,7 +18,7 @@ Sprite_Component :: struct {
 
 create_sprite_component :: proc(owner: ^Actor, draw_order: i32 = 100) -> ^Sprite_Component {
 	comp := create_component(Sprite_Component, owner, draw_order)
-  sc := &comp.derived_comp.(Sprite_Component)
+  sc := &comp.derived.(Sprite_Component)
   sc.draw_order = draw_order
 
 	add_sprite_to_game(owner.game, sc)
