@@ -1,12 +1,13 @@
 package asteroids
 
 import "core:math/linalg"
+import gl "vendor:OpenGL"
 import sdl "vendor:sdl2"
 
 Sprite_Variant :: union {}
 
 Sprite_Component :: struct {
-	using base:     ^Component,
+	base:           ^Component,
 	texture:        ^sdl.Texture,
 	draw_order:     i32,
 	tex_width:      i32,
@@ -16,7 +17,7 @@ Sprite_Component :: struct {
 
 create_sprite_component :: proc(owner: ^Actor, draw_order: i32 = 100) -> ^Sprite_Component {
 	comp := create_component(Sprite_Component, owner, draw_order)
-	sc := &comp.derived.(Sprite_Component)
+	sc := &comp.base.derived.(Sprite_Component)
 	sc.draw_order = draw_order
 
 	add_sprite_to_game(owner.game, sc)
@@ -25,29 +26,31 @@ create_sprite_component :: proc(owner: ^Actor, draw_order: i32 = 100) -> ^Sprite
 }
 
 destroy_sprite_component :: proc(s: ^Sprite_Component) {
-	remove_sprite_from_game(s.owner.game, s)
+	remove_sprite_from_game(s.base.owner.game, s)
 }
 
-draw_sprite_component :: proc(s: ^Sprite_Component, renderer: ^sdl.Renderer) {
-	a := s.owner
+draw_sprite_component :: proc(s: ^Sprite_Component) {
+	gl.DrawElements(u32(gl.TRIANGLES), 6, gl.UNSIGNED_INT, nil)
 
-	if s.texture == nil do return
+	// a := s.owner
 
-	r: sdl.Rect
-	r.w = i32(f32(s.tex_width) * a.scale)
-	r.h = i32(f32(s.tex_height) * a.scale)
-	r.x = i32(a.position.x - f32(r.w / 2))
-	r.y = i32(a.position.y - f32(r.h / 2))
+	// if s.texture == nil do return
 
-	sdl.RenderCopyEx(
-		a.game.renderer,
-		s.texture,
-		nil,
-		&r,
-		f64(linalg.to_degrees(a.rotation)),
-		nil,
-		.NONE,
-	)
+	// r: sdl.Rect
+	// r.w = i32(f32(s.tex_width) * a.scale)
+	// r.h = i32(f32(s.tex_height) * a.scale)
+	// r.x = i32(a.position.x - f32(r.w / 2))
+	// r.y = i32(a.position.y - f32(r.h / 2))
+
+	// sdl.RenderCopyEx(
+	// 	a.game.renderer,
+	// 	s.texture,
+	// 	nil,
+	// 	&r,
+	// 	f64(linalg.to_degrees(a.rotation)),
+	// 	nil,
+	// 	.NONE,
+	// )
 }
 
 set_sprite_texture :: proc(s: ^Sprite_Component, texture: ^sdl.Texture) {

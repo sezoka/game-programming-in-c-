@@ -4,7 +4,7 @@ import "core:math/linalg"
 import "core:fmt"
 
 Circle_Component :: struct {
-	using base: ^Component,
+	base: ^Component,
 	radius:     f32,
 }
 
@@ -14,11 +14,11 @@ create_circle_component :: proc(owner: ^Actor) -> ^Circle_Component {
 }
 
 get_circle_component_center :: proc(cc: ^Circle_Component) -> Vector2 {
-	return cc.owner.position
+	return cc.base.owner.position
 }
 
 get_circle_component_radius :: proc(cc: ^Circle_Component) -> f32 {
-	return cc.owner.scale * cc.radius
+	return cc.base.owner.scale * cc.radius
 }
 
 check_is_circles_intersect :: proc(a: ^Circle_Component, b: ^Circle_Component) -> bool {

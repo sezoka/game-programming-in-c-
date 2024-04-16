@@ -2,8 +2,10 @@ package asteroids
 
 import "core:fmt"
 import "core:math"
+import gl "vendor:OpenGL"
 import sdl "vendor:sdl2"
 import sdl_img "vendor:sdl2/image"
+
 
 WIDTH :: 1280
 HEIGHT :: 720
@@ -14,12 +16,14 @@ Game :: struct {
 	pending_actors:     [dynamic]^Actor,
 	sprites:            [dynamic]^Sprite_Component,
 	window:             ^sdl.Window,
-	renderer:           ^sdl.Renderer,
+	gl_context:         sdl.GLContext,
 	ticks_count:        u32,
 	is_running:         bool,
 	is_updating_actors: bool,
 	ship:               ^Ship_Actor,
 	asteroids:          [dynamic]^Asteroid_Actor,
+	sprite_verts:       Vertex_Array,
+	sprite_shader:      Shader,
 }
 
 create_game :: proc() -> Game {
@@ -34,7 +38,34 @@ init_game :: proc(g: ^Game) -> bool {
 		sdl.Log("Unable to initialize SDL: %s", sdl.GetError())
 		return false
 	}
-	window := sdl.CreateWindow("Pong", 100, 100, WIDTH, HEIGHT, nil)
+
+	{
+		// opengl attributes
+		sdl.GL_SetAttribute(.CONTEXT_PROFILE_MASK, i32(sdl.GLprofile.CORE))
+		sdl.GL_SetAttribute(.CONTEXT_MAJOR_VERSION, 3)
+		sdl.GL_SetAttribute(.CONTEXT_MINOR_VERSION, 3)
+
+		sdl.GL_SetAttribute(.RED_SIZE, 8)
+		sdl.GL_SetAttribute(.GREEN_SIZE, 8)
+		sdl.GL_SetAttribute(.BLUE_SIZE, 8)
+		sdl.GL_SetAttribute(.ALPHA_SIZE, 8)
+
+		sdl.GL_SetAttribute(.DOUBLEBUFFER, 1)
+		sdl.GL_SetAttribute(.ACCELERATED_VISUAL, 1)
+	}
+
+	window := sdl.CreateWindow(
+		"Game Programming in Odin (Chapter 5)",
+		100,
+		100,
+		WIDTH,
+		HEIGHT,
+		sdl.WINDOW_OPENGL,
+	)
+
+	gl_context := sdl.GL_CreateContext(window)
+	gl.load_up_to(3, 3, sdl.gl_set_proc_address)
+
 	if window == nil {
 		sdl.Log("Failed to create window: %s", sdl.GetError())
 		return false
@@ -51,14 +82,20 @@ init_game :: proc(g: ^Game) -> bool {
 		actors         = make([dynamic]^Actor),
 		pending_actors = make([dynamic]^Actor),
 		window         = window,
-		renderer       = renderer,
+		gl_context     = gl_context,
 		ticks_count    = sdl.GetTicks(),
 		is_running     = true,
 	}
 
+	if !load_shaders(g) {
+		return false
+	}
+
+	init_sprite_verts(g)
+
 	load_data(g)
 
-	return false
+	return true
 }
 
 run_game_loop :: proc(g: ^Game) {
@@ -129,29 +166,58 @@ update_game :: proc(g: ^Game) {
 	}
 }
 
+init_sprite_verts :: proc(g: ^Game) {
+  // odinfmt: disable
+  verts := []f32{
+		-0.5,  0.5, 0, 0, 0, // top let
+		 0.5,  0.5, 0, 1, 0, // top right
+		 0.5, -0.5, 0, 1, 1, // bottom right
+		-0.5, -0.5, 0, 0, 1  // bottom let
+	};
+
+  indices := []i32{
+		0, 1, 2,
+		2, 3, 0,
+	};
+  // odinfmt: enable
+
+	g.sprite_verts = create_vertex_array(verts, 4, indices)
+}
+
+load_shaders :: proc(g: ^Game) -> bool {
+	if !load_shader(&g.sprite_shader, "./shaders/basic_vert.glsl", "./shaders/basic_frag.glsl") {
+		return false
+	}
+	set_active_shader(&g.sprite_shader)
+	return true
+}
+
 generate_output :: proc(g: ^Game) {
-	sdl.SetRenderDrawColor(g.renderer, 0, 0, 0, 255)
-	sdl.RenderClear(g.renderer)
+	gl.ClearColor(0.86, 0.86, 0.86, 1.0)
+	gl.Clear(gl.COLOR_BUFFER_BIT)
+
+	set_active_shader(&g.sprite_shader)
+	set_active_vertex_array(&g.sprite_verts)
 
 	for sprite in g.sprites {
-		draw_sprite_component(sprite, g.renderer)
+		draw_sprite_component(sprite)
 	}
 
-	sdl.RenderPresent(g.renderer)
+	sdl.GL_SwapWindow(g.window)
 }
 
 shutdown :: proc(g: ^Game) {
 	unload_data(g)
 	sdl_img.Quit()
-	sdl.DestroyRenderer(g.renderer)
+	sdl.GL_DeleteContext(g.gl_context)
 	sdl.DestroyWindow(g.window)
 	sdl.Quit()
 }
 
 load_data :: proc(g: ^Game) {
 	ship := create_ship_actor(g)
-	ship.position = {512, 384}
-	ship.rotation = math.PI / 2
+	ship.base.position = {512, 384}
+	ship.base.rotation = math.PI / 2
 	g.ship = ship
 
 	num_asteroids := 20
@@ -170,6 +236,9 @@ remove_asteroid_from_game :: proc(g: ^Game, a: ^Asteroid_Actor) {
 }
 
 unload_data :: proc(g: ^Game) {
+	destroy_shader(&g.sprite_shader)
+	destroy_vertex_array(&g.sprite_verts)
+
 	// Delete actors
 	for (len(g.actors) != 0) {
 		destroy_actor(g.actors[len(g.actors) - 1])

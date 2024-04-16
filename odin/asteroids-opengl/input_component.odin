@@ -4,7 +4,7 @@ import "core:fmt"
 import sdl "vendor:sdl2"
 
 Input_Component :: struct {
-	using base:            ^Move_Component,
+	base:            ^Move_Component,
 	// The maximum forward/angular speeds
 	max_forward_speed:     f32,
 	max_angular_speed:     f32,
@@ -30,7 +30,7 @@ process_input_for_input_component :: proc(ic: ^Input_Component, key_state: [^]u8
 	if (key_state[ic.back_key] != 0) {
 		forward_speed -= ic.max_forward_speed
 	}
-	ic.forward_speed = forward_speed
+	ic.base.forward_speed = forward_speed
 
 	// Calculate angular speed for MoveComponent
 	angular_speed: f32
@@ -40,5 +40,5 @@ process_input_for_input_component :: proc(ic: ^Input_Component, key_state: [^]u8
 	if (key_state[ic.counter_clockwise_key] != 0) {
 		angular_speed -= ic.max_angular_speed
 	}
-	ic.angular_speed = angular_speed
+	ic.base.angular_speed = angular_speed
 }

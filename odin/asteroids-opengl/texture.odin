@@ -25,7 +25,7 @@ get_texture :: proc(g: ^Game, file_path: string) -> ^sdl.Texture {
 	if ok {
 		return texture
 	}
-	texture = load_texture(g.renderer, file_path)
+	// texture = load_texture(g.renderer, file_path)
 	if texture != nil {
 		g.textures[file_path] = texture
 	}

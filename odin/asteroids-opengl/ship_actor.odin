@@ -4,18 +4,18 @@ import "core:math"
 import sdl "vendor:sdl2"
 
 Ship_Actor :: struct {
-	using base:     ^Actor,
+	base:           ^Actor,
 	laser_cooldown: f32,
 }
 
 create_ship_actor :: proc(g: ^Game) -> ^Ship_Actor {
 	ship := create_actor(Ship_Actor, g)
 
-	sc := create_sprite_component(ship, 150)
+	sc := create_sprite_component(ship.base, 150)
 	texture := get_texture(g, "../../assets/asteroids/Ship.png")
 	set_sprite_texture(sc, texture)
 
-	ic := create_input_component(ship)
+	ic := create_input_component(ship.base)
 	ic.forward_key = sdl.SCANCODE_W
 	ic.back_key = sdl.SCANCODE_S
 	ic.clockwise_key = sdl.SCANCODE_D
@@ -33,9 +33,9 @@ update_ship_actor :: proc(sa: ^Ship_Actor, delta: f32) {
 process_input_for_ship_actor :: proc(sa: ^Ship_Actor, key_state: [^]u8) {
 	if key_state[sdl.SCANCODE_SPACE] != 0 && sa.laser_cooldown <= 0.0 {
 		// Create a laser and set its position/rotation to mine
-		laser := create_laser_actor(sa.game)
-		laser.position = sa.position
-		laser.rotation = sa.rotation
+		laser := create_laser_actor(sa.base.game)
+		laser.base.position = sa.base.position
+		laser.base.rotation = sa.base.rotation
 		// Reset laser cooldown (half second)
 		sa.laser_cooldown = 0.5
 	}
