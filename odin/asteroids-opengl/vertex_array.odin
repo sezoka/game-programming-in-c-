@@ -11,7 +11,7 @@ Vertex_Array :: struct {
 	vertex_array_id:  u32,
 }
 
-create_vertex_array :: proc(verts: []f32, num_verts: int, indices: []i32) -> Vertex_Array {
+create_vertex_array :: proc(verts: []f32, num_verts: int, indices: []u32) -> Vertex_Array {
 	arr: Vertex_Array
 	arr.num_indices = len(indices)
 	arr.num_verts = num_verts
@@ -20,25 +20,20 @@ create_vertex_array :: proc(verts: []f32, num_verts: int, indices: []i32) -> Ver
 	gl.BindVertexArray(arr.vertex_array_id)
 
 	gl.GenBuffers(1, &arr.vertex_buffer_id)
-	gl.BindBuffer(u32(gl.ARRAY_BUFFER), arr.vertex_buffer_id)
+	gl.BindBuffer(gl.ARRAY_BUFFER, arr.vertex_buffer_id)
 	gl.BufferData(
 		u32(gl.ARRAY_BUFFER),
-		num_verts * 5 * size_of(f32),
+		num_verts * 3 * size_of(f32),
 		raw_data(verts),
 		gl.STATIC_DRAW,
 	)
 
 	gl.GenBuffers(1, &arr.index_buffer_id)
 	gl.BindBuffer(gl.ELEMENT_ARRAY_BUFFER, arr.index_buffer_id)
-	gl.BufferData(
-		gl.ELEMENT_ARRAY_BUFFER,
-		len(indices) * size_of(i32),
-		raw_data(indices),
-		gl.STATIC_DRAW,
-	)
+	gl.BufferData(gl.ELEMENT_ARRAY_BUFFER, 6 * size_of(u32), raw_data(indices), gl.STATIC_DRAW)
 
 	gl.EnableVertexAttribArray(0)
-	gl.VertexAttribPointer(0, size_of(i32), gl.FLOAT, gl.FALSE, size_of(f32) * 5, 0)
+	gl.VertexAttribPointer(0, 3, gl.FLOAT, gl.FALSE, size_of(f32) * 3, 0)
 
 	return arr
 }

@@ -2,6 +2,7 @@ package asteroids
 
 import "core:fmt"
 import "core:math"
+import "core:math/linalg"
 import gl "vendor:OpenGL"
 import sdl "vendor:sdl2"
 import sdl_img "vendor:sdl2/image"
@@ -143,11 +144,13 @@ update_game :: proc(g: ^Game) {
 		g.is_updating_actors = true
 		for actor in g.actors {
 			update_actor(actor, delta)
+
 		}
 		g.is_updating_actors = false
 	}
 
 	for actor in g.pending_actors {
+		compute_world_transform_for_actor(actor)
 		append(&g.actors, actor)
 	}
 	clear(&g.pending_actors)
@@ -166,41 +169,52 @@ update_game :: proc(g: ^Game) {
 	}
 }
 
+// odinfmt: disable
+verts := [?]f32{
+  -0.5,  0.5, 0, // top let
+   0.5,  0.5, 0, // top right
+   0.5, -0.5, 0, // bottom right
+  -0.5, -0.5, 0  // bottom let
+};
+
+indices := [?]u32{
+  0, 1, 2,
+  2, 3, 0,
+};
+// odinfmt: enable
+
+
 init_sprite_verts :: proc(g: ^Game) {
-  // odinfmt: disable
-  verts := []f32{
-		-0.5,  0.5, 0, 0, 0, // top let
-		 0.5,  0.5, 0, 1, 0, // top right
-		 0.5, -0.5, 0, 1, 1, // bottom right
-		-0.5, -0.5, 0, 0, 1  // bottom let
-	};
-
-  indices := []i32{
-		0, 1, 2,
-		2, 3, 0,
-	};
-  // odinfmt: enable
-
-	g.sprite_verts = create_vertex_array(verts, 4, indices)
+	g.sprite_verts = create_vertex_array(verts[:], 4, indices[:])
 }
 
+// odinfmt: disable
+simple_view_projection : matrix[4, 4]f32 : {
+   2.0/WIDTH, 0, 0, 0, 
+   0, 2.0/HEIGHT, 0, 0,
+   0, 0, 1, 0 ,
+   0, 0, 0, 1 }
+// odinfmt: enable
+
+
 load_shaders :: proc(g: ^Game) -> bool {
-	if !load_shader(&g.sprite_shader, "./shaders/basic_vert.glsl", "./shaders/basic_frag.glsl") {
+	if !load_shader(&g.sprite_shader, "./shaders/transform.glsl", "./shaders/basic_frag.glsl") {
 		return false
 	}
 	set_active_shader(&g.sprite_shader)
+	set_matrix_uniform(&g.sprite_shader, "u_view_proj", simple_view_projection)
 	return true
 }
 
 generate_output :: proc(g: ^Game) {
-	gl.ClearColor(0.86, 0.86, 0.86, 1.0)
+	gl.ClearColor(0.2, 0.2, 0.2, 1.0)
 	gl.Clear(gl.COLOR_BUFFER_BIT)
 
 	set_active_shader(&g.sprite_shader)
 	set_active_vertex_array(&g.sprite_verts)
 
 	for sprite in g.sprites {
-		draw_sprite_component(sprite)
+		draw_sprite_component(sprite, &g.sprite_shader)
 	}
 
 	sdl.GL_SwapWindow(g.window)
@@ -216,8 +230,8 @@ shutdown :: proc(g: ^Game) {
 
 load_data :: proc(g: ^Game) {
 	ship := create_ship_actor(g)
-	ship.base.position = {512, 384}
-	ship.base.rotation = math.PI / 2
+	ship.base._position = {512, 384}
+	ship.base._rotation = math.PI / 2
 	g.ship = ship
 
 	num_asteroids := 20

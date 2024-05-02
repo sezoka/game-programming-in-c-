@@ -55,3 +55,14 @@ process_input_for_component :: proc(c: ^Component, key_state: [^]u8) {
 	case Sprite_Component, Circle_Component:
 	}
 }
+
+on_update_actor_world_transform :: proc(comp: ^Component) {
+	switch comp in comp.derived {
+	case Sprite_Component:
+		{}
+	case Circle_Component:
+		{}
+	case Move_Component:
+		{}
+	}
+}

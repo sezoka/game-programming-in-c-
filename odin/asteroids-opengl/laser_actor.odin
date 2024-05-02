@@ -18,7 +18,6 @@ create_laser_actor :: proc(g: ^Game) -> ^Laser_Actor {
 	mc := create_move_component(laser.base)
 	mc.forward_speed = 800
 
-
 	circle := create_circle_component(laser.base)
 	circle.radius = 11
 	laser.circle = circle
