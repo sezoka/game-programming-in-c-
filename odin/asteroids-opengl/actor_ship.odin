@@ -16,8 +16,6 @@ create_ship_actor :: proc(g: ^Game) -> ^Ship_Actor {
 	sc := create_sprite_component(ship.base, 150)
 	texture := get_texture(g, "../../assets/asteroids/Ship.png")
 	set_sprite_texture(sc, texture)
-	sc.tex_height = 10.0
-	sc.tex_width = 10.0
 
 	ic := create_input_component(ship.base)
 	ic.forward_key = sdl.SCANCODE_W

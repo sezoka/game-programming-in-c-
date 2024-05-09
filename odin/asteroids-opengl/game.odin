@@ -12,7 +12,7 @@ WIDTH :: 1280
 HEIGHT :: 720
 
 Game :: struct {
-	textures:           map[cstring]Texture,
+	textures:           map[cstring]^Texture,
 	actors:             [dynamic]^Actor,
 	pending_actors:     [dynamic]^Actor,
 	sprites:            [dynamic]^Sprite_Component,
@@ -198,7 +198,7 @@ simple_view_projection : matrix[4, 4]f32 : {
 
 
 load_shaders :: proc(g: ^Game) -> bool {
-	if !load_shader(&g.sprite_shader, "./shaders/transform.glsl", "./shaders/basic_frag.glsl") {
+	if !load_shader(&g.sprite_shader, "./shaders/sprite_vert.glsl", "./shaders/sprite_frag.glsl") {
 		return false
 	}
 	set_active_shader(&g.sprite_shader)
@@ -212,6 +212,9 @@ generate_output :: proc(g: ^Game) {
 
 	set_active_shader(&g.sprite_shader)
 	set_active_vertex_array(&g.sprite_verts)
+
+	gl.Enable(gl.BLEND)
+	gl.BlendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
 
 	for sprite in g.sprites {
 		draw_sprite_component(sprite, &g.sprite_shader)
@@ -260,7 +263,7 @@ unload_data :: proc(g: ^Game) {
 
 	// Destroy textures
 	for _, &tex in g.textures {
-		unload_texture(&tex)
+		unload_texture(tex)
 	}
 	delete(g.textures)
 

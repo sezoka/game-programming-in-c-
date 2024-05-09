@@ -32,44 +32,11 @@ destroy_sprite_component :: proc(s: ^Sprite_Component) {
 
 
 draw_sprite_component :: proc(s: ^Sprite_Component, shader: ^Shader) {
-
-	scale_matrix := create_scale_matrix(f32(50), f32(50), 1.0)
+	scale_matrix := create_scale_matrix(f32(s.tex_width), f32(s.tex_height), 1.0)
 	world_matrix := scale_matrix * s.base.owner.world_transform
-
-	// for index in indices {
-	// 	line := verts[index * 5:index * 5 + 5]
-	// 	mat: matrix[1, 4]f32
-	// 	mat[0, 0] = line[0]
-	// 	mat[0, 1] = line[1]
-	// 	mat[0, 2] = line[2]
-	// 	mat[0, 3] = 1
-	// 	mult := mat * scale_matrix * world_matrix * simple_view_projection
-	// }
-
 	set_matrix_uniform(shader, "u_world_transform", linalg.transpose(world_matrix))
-
-  set_active_texture(s.texture)
+	set_active_texture(s.texture)
 	gl.DrawElements(u32(gl.TRIANGLES), 6, gl.UNSIGNED_INT, nil)
-
-	// a := s.owner
-
-	// if s.texture == nil do return
-
-	// r: sdl.Rect
-	// r.w = i32(f32(s.tex_width) * a.scale)
-	// r.h = i32(f32(s.tex_height) * a.scale)
-	// r.x = i32(a.position.x - f32(r.w / 2))
-	// r.y = i32(a.position.y - f32(r.h / 2))
-
-	// sdl.RenderCopyEx(
-	// 	a.game.renderer,
-	// 	s.texture,
-	// 	nil,
-	// 	&r,
-	// 	f64(linalg.to_degrees(a.rotation)),
-	// 	nil,
-	// 	.NONE,
-	// )
 }
 
 set_sprite_texture :: proc(s: ^Sprite_Component, texture: ^Texture) {

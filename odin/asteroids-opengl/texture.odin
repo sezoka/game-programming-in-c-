@@ -1,5 +1,6 @@
 package asteroids
 
+import "core:fmt"
 import "core:log"
 import "core:strings"
 // import sdl "vendor:sdl2"
@@ -13,20 +14,20 @@ Texture :: struct {
 	texture_id: u32,
 }
 
-create_texture :: proc() -> Texture {
-	return Texture{}
+create_texture :: proc() -> ^Texture {
+	return new(Texture)
 }
 
 load_texture :: proc(t: ^Texture, file_name: cstring) -> bool {
-	channels, w, h: i32
-	image := stb_img.load(file_name, &w, &h, &channels, 0)
+	channels: i32
+	image := stb_img.load(file_name, &t.width, &t.height, &channels, 0)
 	if image == nil {
-		log.errorf("Can't load image using file path '%s'", file_name)
+		fmt.printfln("Can't load image using file path '%s'", file_name)
 		return false
 	}
 	defer stb_img.image_free(image)
 
-	format: i32 = channels == 4 ? gl.RGB : gl.RGBA
+	format: i32 = channels == 4 ? gl.RGBA : gl.RGB
 	gl.GenTextures(1, &t.texture_id)
 	gl.BindTexture(gl.TEXTURE_2D, t.texture_id)
 	gl.TexImage2D(
@@ -49,6 +50,7 @@ load_texture :: proc(t: ^Texture, file_name: cstring) -> bool {
 
 unload_texture :: proc(t: ^Texture) {
 	gl.DeleteTextures(1, (^u32)(&t.texture_id))
+	free(t)
 }
 
 set_active_texture :: proc(t: ^Texture) {
@@ -56,16 +58,18 @@ set_active_texture :: proc(t: ^Texture) {
 }
 
 get_texture :: proc(g: ^Game, file_path: cstring) -> ^Texture {
-	texture, ok := &g.textures[file_path]
+	texture, ok := g.textures[file_path]
 	if ok {
 		return texture
 	}
-  new_texture := create_texture()
-	ok = load_texture(&new_texture, file_path)
+	new_texture := create_texture()
+	ok = load_texture(new_texture, file_path)
 	if ok {
 		g.textures[file_path] = new_texture
+		return new_texture
+	} else {
+		return nil
 	}
-	return &g.textures[file_path]
 
 }
 

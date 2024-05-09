@@ -4,7 +4,7 @@ import "core:fmt"
 import sdl "vendor:sdl2"
 
 Input_Component :: struct {
-	base:            ^Move_Component,
+	base:                  ^Move_Component,
 	// The maximum forward/angular speeds
 	max_forward_speed:     f32,
 	max_angular_speed:     f32,
