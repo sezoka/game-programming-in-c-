@@ -20,8 +20,8 @@ create_asteroid_actor :: proc(g: ^Game) -> ^Asteroid_Actor {
 	texture := get_texture(g, "../../assets/asteroids/Asteroid.png")
 	set_sprite_texture(sc, texture)
 
-	sc.tex_height = 10.0
-	sc.tex_width = 10.0
+	// sc.tex_height = 10.0
+	// sc.tex_width = 10.0
 
 	mc := create_move_component(asteroid.base)
 	mc.forward_speed = 10

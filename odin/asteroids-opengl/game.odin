@@ -12,7 +12,7 @@ WIDTH :: 1280
 HEIGHT :: 720
 
 Game :: struct {
-	textures:           map[string]^sdl.Texture,
+	textures:           map[cstring]Texture,
 	actors:             [dynamic]^Actor,
 	pending_actors:     [dynamic]^Actor,
 	sprites:            [dynamic]^Sprite_Component,
@@ -171,10 +171,10 @@ update_game :: proc(g: ^Game) {
 
 // odinfmt: disable
 verts := [?]f32{
-  -0.5,  0.5, 0, // top let
-   0.5,  0.5, 0, // top right
-   0.5, -0.5, 0, // bottom right
-  -0.5, -0.5, 0  // bottom let
+  -0.5,  0.5, 0, 0, 0, // top let
+   0.5,  0.5, 0, 1, 0, // top right
+   0.5, -0.5, 0, 1, 1, // bottom right
+  -0.5, -0.5, 0, 0, 1  // bottom let
 };
 
 indices := [?]u32{
@@ -230,7 +230,7 @@ shutdown :: proc(g: ^Game) {
 
 load_data :: proc(g: ^Game) {
 	ship := create_ship_actor(g)
-	ship.base._position = {512, 384}
+	ship.base._position = {0, 0}
 	ship.base._rotation = math.PI / 2
 	g.ship = ship
 
@@ -259,8 +259,8 @@ unload_data :: proc(g: ^Game) {
 	}
 
 	// Destroy textures
-	for _, tex in g.textures {
-		sdl.DestroyTexture(tex)
+	for _, &tex in g.textures {
+		unload_texture(&tex)
 	}
 	delete(g.textures)
 

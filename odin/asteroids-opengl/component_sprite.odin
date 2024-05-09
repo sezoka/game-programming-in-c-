@@ -9,7 +9,7 @@ import sdl "vendor:sdl2"
 Sprite_Variant :: union {}
 Sprite_Component :: struct {
 	base:           ^Component,
-	texture:        ^sdl.Texture,
+	texture:        ^Texture,
 	draw_order:     i32,
 	tex_width:      i32,
 	tex_height:     i32,
@@ -32,6 +32,7 @@ destroy_sprite_component :: proc(s: ^Sprite_Component) {
 
 
 draw_sprite_component :: proc(s: ^Sprite_Component, shader: ^Shader) {
+
 	scale_matrix := create_scale_matrix(f32(50), f32(50), 1.0)
 	world_matrix := scale_matrix * s.base.owner.world_transform
 
@@ -47,6 +48,7 @@ draw_sprite_component :: proc(s: ^Sprite_Component, shader: ^Shader) {
 
 	set_matrix_uniform(shader, "u_world_transform", linalg.transpose(world_matrix))
 
+  set_active_texture(s.texture)
 	gl.DrawElements(u32(gl.TRIANGLES), 6, gl.UNSIGNED_INT, nil)
 
 	// a := s.owner
@@ -70,9 +72,10 @@ draw_sprite_component :: proc(s: ^Sprite_Component, shader: ^Shader) {
 	// )
 }
 
-set_sprite_texture :: proc(s: ^Sprite_Component, texture: ^sdl.Texture) {
+set_sprite_texture :: proc(s: ^Sprite_Component, texture: ^Texture) {
 	s.texture = texture
-	sdl.QueryTexture(texture, nil, nil, &s.tex_width, &s.tex_height)
+	s.tex_width = texture.width
+	s.tex_height = texture.height
 }
 
 get_sprite_from_component :: proc(comp: ^Component) -> ^Sprite_Component {

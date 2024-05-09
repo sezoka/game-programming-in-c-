@@ -40,6 +40,7 @@ update_move_component :: proc(mc: ^Move_Component, delta: f32) {
 		if pos.y < -(HEIGHT / 2) do pos.y = (HEIGHT / 2)
 		else if pos.y > (HEIGHT / 2) do pos.y = -(HEIGHT / 2)
 
+
 		// if pos.x + 32 < 0 do pos.x = f32(WIDTH + 32)
 		// if WIDTH < pos.x - 32 do pos.x = f32(-32)
 
