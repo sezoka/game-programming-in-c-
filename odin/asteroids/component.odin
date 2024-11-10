@@ -27,7 +27,7 @@ create_component :: proc($T: typeid, a: ^Actor, update_order: i32 = 100) -> ^T {
 }
 
 destroy_component :: proc(c: ^Component) {
-	switch comp in &c.derived {
+	switch &comp in c.derived {
 	case Sprite_Component:
 		destroy_sprite_component(&comp)
 	case Circle_Component, Move_Component:
@@ -38,7 +38,7 @@ destroy_component :: proc(c: ^Component) {
 }
 
 update_component :: proc(c: ^Component, delta: f32) {
-	switch comp in &c.derived {
+	switch &comp in c.derived {
 	case Move_Component:
 		update_move_component(&comp, delta)
 	case Sprite_Component, Circle_Component:
@@ -48,7 +48,7 @@ update_component :: proc(c: ^Component, delta: f32) {
 process_input_for_component :: proc(c: ^Component, key_state: [^]u8) {
 	#partial switch comp in &c.derived {
 	case Move_Component:
-		switch move_comp in &comp.derived {
+		switch &move_comp in comp.derived {
 		case Input_Component:
 			process_input_for_input_component(&move_comp, key_state)
 		}

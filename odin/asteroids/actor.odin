@@ -45,7 +45,7 @@ destroy_actor :: proc(a: ^Actor) {
 		destroy_component(comp)
 	}
 	delete(a.components)
-	switch actor in &a.derived {
+	switch &actor in a.derived {
 	case Ship_Actor:
 	case Asteroid_Actor:
 		remove_asteroid_from_game(a.game, &actor)
@@ -68,7 +68,7 @@ update_actor_components :: proc(a: ^Actor, delta: f32) {
 }
 
 update_actor_user_code :: proc(a: ^Actor, delta: f32) {
-	switch actor in &a.derived {
+	switch &actor in a.derived {
 	case Laser_Actor:
 		update_laser_actor(&actor, delta)
 	case Asteroid_Actor: // TODO
@@ -86,7 +86,7 @@ process_input_for_actor :: proc(a: ^Actor, key_state: [^]u8) {
 }
 
 process_input_for_actor_user_code :: proc(a: ^Actor, key_state: [^]u8) {
-	#partial switch actor in &a.derived {
+	#partial switch &actor in a.derived {
 	case Ship_Actor:
 		process_input_for_ship_actor(&actor, key_state)
 	case:

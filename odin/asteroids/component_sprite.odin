@@ -58,7 +58,7 @@ set_sprite_texture :: proc(s: ^Sprite_Component, texture: ^sdl.Texture) {
 }
 
 get_sprite_from_component :: proc(s: ^Component_Variant) -> ^Sprite_Component {
-	#partial switch variant in s {
+	#partial switch &variant in s {
 	case Sprite_Component:
 		return &variant
 	}
